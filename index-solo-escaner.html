@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escáner Biométrico Facial (solo MediaPipe, sin API)</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { text-align: center; color: #38bdf8; font-size: 1.6rem; }
+    .subtitle { text-align: center; color: #94a3b8; margin-bottom: 20px; font-size: 0.9rem; }
+    .card { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; color: #94a3b8; }
+    input[type="file"] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; margin-bottom: 15px; }
+    .canvas-container { position: relative; width: 100%; max-width: 480px; margin: 0 auto 15px auto; display: none; }
+    canvas { width: 100%; height: auto; border-radius: 12px; border: 2px solid #38bdf8; }
+    button { width: 100%; background: #0284c7; color: white; border: none; padding: 14px; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+    button:hover { background: #0369a1; }
+    button:disabled { background: #475569; cursor: not-allowed; }
+    pre { background: #0f172a; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; color: #38bdf8; border: 1px solid #334155; }
+    .status { color: #f59e0b; font-weight: bold; margin-top: 10px; text-align: center; }
+    .copied { color: #10b981 !important; }
+    .instructions { background: #0f172a; border-left: 3px solid #38bdf8; padding: 12px 16px; border-radius: 6px; font-size: 0.9rem; color: #cbd5e1; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Escáner Biométrico Facial</h1>
+  <p class="subtitle">Solo cálculo local con MediaPipe · sin clave API · sin coste</p>
+
+  <div class="card">
+    <label for="imageInput">Sube tu foto de frente (Luz neutra, cara descubierta):</label>
+    <input type="file" id="imageInput" accept="image/*" />
+    <div id="status" class="status">Cargando motor de escaneo...</div>
+  </div>
+
+  <div class="canvas-container" id="canvasContainer">
+    <canvas id="outputCanvas"></canvas>
+  </div>
+
+  <div class="card" id="jsonCard" style="display:none;">
+    <label>Puntos y Ratios Matemáticos Extraídos:</label>
+    <pre id="jsonOutput"></pre>
+    <button id="copyBtn">Copiar JSON</button>
+    <div class="instructions">
+      Pega este JSON en un chat de Claude junto con lo que quieras que analice
+      (por ejemplo: diseño de cejas, corte de pelo según proporción mandíbula/pómulos, etc.).
+      No hace falta clave API para esta parte: el análisis lo puedes pedir directamente
+      en la conversación de Claude.ai.
+    </div>
+  </div>
+</div>
+
+<script>
+  let faceMesh;
+  let computedRatios = null;
+  const imageInput = document.getElementById('imageInput');
+  const statusEl = document.getElementById('status');
+  const canvasContainer = document.getElementById('canvasContainer');
+  const canvas = document.getElementById('outputCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function initFaceMesh() {
+    faceMesh = new FaceMesh({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+    });
+
+    faceMesh.setOptions({
+      maxNumFaces: 1,
+      refineLandmarks: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
+
+    faceMesh.onResults(onFaceMeshResults);
+    statusEl.innerText = "Listo. Selecciona una foto.";
+    statusEl.style.color = "#10b981";
+  }
+
+  imageInput.addEventListener('change', (e) => {
+    if (!e.target.files[0]) return;
+    const file = e.target.files[0];
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = async () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      canvasContainer.style.display = 'block';
+      statusEl.innerText = "Procesando imagen...";
+      await faceMesh.send({ image: img });
+    };
+  });
+
+  function onFaceMeshResults(results) {
+    if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
+      statusEl.innerText = "No se detectó ningún rostro. Intenta con otra foto.";
+      statusEl.style.color = "#ef4444";
+      return;
+    }
+
+    const landmarks = results.multiFaceLandmarks[0];
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const img = new Image();
+    img.src = URL.createObjectURL(imageInput.files[0]);
+    ctx.drawImage(img, 0, 0);
+
+    ctx.fillStyle = "#38bdf8";
+    landmarks.forEach((pt) => {
+      ctx.beginPath();
+      ctx.arc(pt.x * canvas.width, pt.y * canvas.height, 2, 0, 2 * Math.PI);
+      ctx.fill();
+    });
+
+    const topForehead = landmarks[10];
+    const eyebrowMid = landmarks[9];
+    const noseBase = landmarks[2];
+    const chinTip = landmarks[152];
+    const leftEyeOuter = landmarks[33];
+    const rightEyeOuter = landmarks[263];
+    const leftCheek = landmarks[234];
+    const rightCheek = landmarks[454];
+    const jawLeft = landmarks[58];
+    const jawRight = landmarks[288];
+
+    const dist = (p1, p2) => Math.sqrt(Math.pow((p1.x - p2.x) * canvas.width, 2) + Math.pow((p1.y - p2.y) * canvas.height, 2));
+
+    const upperThird = dist(topForehead, eyebrowMid);
+    const middleThird = dist(eyebrowMid, noseBase);
+    const lowerThird = dist(noseBase, chinTip);
+    const totalFaceHeight = upperThird + middleThird + lowerThird;
+
+    const faceWidthCheeks = dist(leftCheek, rightCheek);
+    const jawWidth = dist(jawLeft, jawRight);
+    const interocularDist = dist(leftEyeOuter, rightEyeOuter);
+
+    computedRatios = {
+      tercios_porcentaje: {
+        superior_frente: ((upperThird / totalFaceHeight) * 100).toFixed(1) + "%",
+        medio_ojos_nariz: ((middleThird / totalFaceHeight) * 100).toFixed(1) + "%",
+        inferior_mandibula_menton: ((lowerThird / totalFaceHeight) * 100).toFixed(1) + "%"
+      },
+      ratios_estructura: {
+        ratio_ancho_alto_tercio_inferior: (lowerThird / faceWidthCheeks).toFixed(2),
+        ratio_mandibula_vs_pomulos: (jawWidth / faceWidthCheeks).toFixed(2),
+        interocular_vs_ancho_cara: (interocularDist / faceWidthCheeks).toFixed(2)
+      },
+      puntos_analizados: 468
+    };
+
+    statusEl.innerText = "¡Puntos extraídos con éxito!";
+    statusEl.style.color = "#10b981";
+    document.getElementById('jsonOutput').innerText = JSON.stringify(computedRatios, null, 2);
+    document.getElementById('jsonCard').style.display = 'block';
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    const text = JSON.stringify(computedRatios, null, 2);
+    try {
+      await navigator.clipboard.writeText(text);
+      const btn = document.getElementById('copyBtn');
+      const original = btn.innerText;
+      btn.innerText = "¡Copiado!";
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerText = original; btn.classList.remove('copied'); }, 1500);
+    } catch (err) {
+      alert("No se pudo copiar automáticamente. Selecciona el texto manualmente.");
+    }
+  });
+
+  window.onload = initFaceMesh;
+</script>
+
+</body>
+</html>

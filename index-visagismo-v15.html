@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aesthetic AI — Clinical Biometrics (v22 Apple Light Fix)</title>
+  <title>Aesthetic AI — Clinical Biometrics (Apple Light v21)</title>
 
-  <!-- Script de MediaPipe Face Mesh -->
+  <!-- MediaPipe Scripts con carga asegurada -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 
   <style>
     :root {
       --bg-light: #F5F5F7;
-      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-bg: rgba(255, 255, 255, 0.85);
       --card-border: rgba(0, 0, 0, 0.08);
       --accent-apple: #0071E3;
       --accent-red: #FF3B30;
@@ -28,69 +28,73 @@
       background-color: var(--bg-light);
       color: var(--text-dark);
       margin: 0;
-      padding: 30px 20px;
+      padding: 40px 20px;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
 
-    .container { max-width: 1040px; margin: 0 auto; }
+    .container { max-width: 1080px; margin: 0 auto; }
 
     header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 36px;
     }
 
     .badge-top {
       display: inline-block;
       background: rgba(0, 113, 227, 0.1);
       color: var(--accent-apple);
-      padding: 6px 16px;
+      padding: 5px 14px;
       border-radius: 99px;
       font-size: 0.78rem;
       font-weight: 600;
-      margin-bottom: 10px;
+      letter-spacing: 0.02em;
+      margin-bottom: 12px;
     }
 
     h1 {
-      font-size: 2.3rem;
+      font-size: 2.5rem;
       font-weight: 700;
       letter-spacing: -0.03em;
       color: var(--text-dark);
-      margin: 0 0 6px 0;
+      margin: 0 0 8px 0;
     }
 
     .subtitle {
       color: var(--text-muted);
-      font-size: 1rem;
+      font-size: 1.05rem;
       margin: 0 auto;
-      max-width: 520px;
+      max-width: 540px;
     }
 
-    /* Cards Estilo Apple */
+    /* Cards Estilo Apple Studio Display */
     .apple-card {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      border-radius: 22px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
     }
 
     h2 {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 600;
-      margin: 0 0 16px 0;
+      margin: 0 0 18px 0;
       letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    /* Botón / Dropzone de Carga */
+    /* Dropzone de Carga */
     .file-dropzone {
-      border: 2px dashed rgba(0, 0, 0, 0.18);
-      background: #FFFFFF;
+      border: 2px dashed rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 0.6);
       border-radius: 16px;
-      padding: 28px;
+      padding: 32px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -105,56 +109,56 @@
 
     .dropzone-label {
       font-weight: 600;
-      font-size: 0.98rem;
+      font-size: 1rem;
       color: var(--text-dark);
       display: block;
       margin-bottom: 4px;
     }
 
-    .dropzone-sub { font-size: 0.82rem; color: var(--text-muted); }
+    .dropzone-sub { font-size: 0.85rem; color: var(--text-muted); }
 
-    /* Grid Principal */
+    /* Layout */
     .main-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 20px;
+      gap: 24px;
     }
 
-    @media (min-width: 860px) {
-      .main-grid { grid-template-columns: 420px 1fr; }
+    @media (min-width: 880px) {
+      .main-grid { grid-template-columns: 440px 1fr; }
     }
 
-    /* Visor Canvas */
+    /* Visor de Imagen */
     .canvas-wrapper {
       position: relative;
       width: 100%;
-      border-radius: 16px;
+      border-radius: 18px;
       overflow: hidden;
       border: 1px solid var(--card-border);
       background: #E5E5EA;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     }
 
     canvas { width: 100%; height: auto; display: block; }
 
-    /* Control Segmentado Estilo iOS */
+    /* Pestañas Segmentadas iOS */
     .segmented-control {
       display: flex;
       background: rgba(120, 120, 128, 0.12);
-      padding: 4px;
-      border-radius: 12px;
-      margin-bottom: 20px;
+      padding: 3px;
+      border-radius: 10px;
+      margin-bottom: 22px;
     }
 
     .segment-btn {
       flex: 1;
       background: transparent;
       border: none;
-      padding: 9px 14px;
+      padding: 8px 14px;
       font-size: 0.85rem;
       font-weight: 600;
       color: var(--text-dark);
-      border-radius: 9px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s ease;
     }
@@ -164,7 +168,7 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 
-    /* Tarjetas HUD Métricas */
+    /* Metricas HUD */
     .hud-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -176,8 +180,8 @@
       background: #FFFFFF;
       border: 1px solid rgba(0, 0, 0, 0.06);
       border-radius: 14px;
-      padding: 14px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
     }
 
     .hud-title {
@@ -190,39 +194,38 @@
     }
 
     .hud-value {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       font-weight: 700;
       color: var(--text-dark);
       letter-spacing: -0.02em;
     }
 
-    /* Barras de Tercios Faciales */
-    .bar-group { margin-bottom: 12px; }
-    .bar-meta { display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 500; margin-bottom: 4px; }
+    /* Barras de Tercios */
+    .bar-group { margin-bottom: 14px; }
+    .bar-meta { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 500; margin-bottom: 5px; }
     .bar-track { background: rgba(0, 0, 0, 0.06); height: 8px; border-radius: 99px; overflow: hidden; }
-    .bar-fill { background: var(--accent-apple); height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+    .bar-fill { background: var(--accent-apple); height: 100%; border-radius: 99px; transition: width 0.5s ease; }
 
-    /* Status Badge */
+    /* Estado & Swatches */
     .status-badge {
       display: block;
       text-align: center;
       padding: 10px;
       border-radius: 12px;
       background: rgba(0, 113, 227, 0.08);
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       color: var(--accent-apple);
       font-weight: 600;
-      margin-top: 12px;
+      margin-top: 14px;
     }
 
     .swatch-box {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
       border: 2px solid #FFFFFF;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
       display: inline-block;
-      vertical-align: middle;
     }
   </style>
 </head>
@@ -230,22 +233,22 @@
 
 <div class="container">
   <header>
-    <div class="badge-top">Aesthetic AI Studio v22</div>
-    <h1>Visagismo &amp; Análisis Biométrico</h1>
-    <p class="subtitle">Evaluación antropométrica y espectro colorimétrico cutáneo en tiempo real.</p>
+    <div class="badge-top">Aesthetic AI Studio v21</div>
+    <h1>Clinical Visagism &amp; Biometrics</h1>
+    <p class="subtitle">Análisis antropométrico facial y evaluación colorimétrica cutánea.</p>
   </header>
 
   <div class="main-grid">
-    <!-- Columna Izquierda: Carga e Imagen -->
+    <!-- Columna Izquierda: Carga y Visor -->
     <div>
       <div class="apple-card">
         <h2>📷 Imagen del Paciente</h2>
         <div class="file-dropzone" onclick="document.getElementById('imageInput').click();">
-          <span class="dropzone-label">Seleccionar foto para análisis</span>
-          <span class="dropzone-sub">Procesamiento seguro en local</span>
+          <span class="dropzone-label">Haz clic para subir foto</span>
+          <span class="dropzone-sub">Procesamiento local confidencial</span>
           <input type="file" id="imageInput" accept="image/*" />
         </div>
-        <div id="status" class="status-badge">Esperando archivo...</div>
+        <div id="status" class="status-badge">Esperando imagen...</div>
       </div>
 
       <div class="canvas-wrapper" id="canvasContainer" style="display:none;">
@@ -254,14 +257,14 @@
       </div>
     </div>
 
-    <!-- Columna Derecha: Dashboard y Diagnóstico -->
+    <!-- Columna Derecha: Controles y Diagnóstico -->
     <div>
       <div class="segmented-control" id="mainNav" style="display:none;">
-        <button class="segment-btn active" id="btnDash" onclick="switchTab('dashboard')">📊 Antropometría</button>
-        <button class="segment-btn" id="btnPiel" onclick="switchTab('piel')">🧴 Piel &amp; Rojez</button>
+        <button class="segment-btn active" onclick="switchTab('dashboard', this)">📊 Antropometría</button>
+        <button class="segment-btn" onclick="switchTab('piel', this)">🧴 Piel &amp; Rojez</button>
       </div>
 
-      <!-- TAB 1: DASHBOARD MEDICIONES -->
+      <!-- TAB 1: DASHBOARD DE MEDICIONES -->
       <div class="apple-card tab-content" id="tab-dashboard" style="display:none;">
         <h2>📊 Diagnóstico Antropométrico</h2>
         
@@ -275,7 +278,7 @@
             <div class="hud-value" id="hudInterocular">0.00</div>
           </div>
           <div class="hud-card">
-            <div class="hud-title">Ratio Mandíbula/Pómulo</div>
+            <div class="hud-title">Proporción Mandíbula/Pómulo</div>
             <div class="hud-value" id="hudJawRatio">0.00</div>
           </div>
           <div class="hud-card">
@@ -284,7 +287,7 @@
           </div>
         </div>
 
-        <h3 style="font-size:0.82rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px;">Proporción de Tercios Faciales</h3>
+        <h3 style="font-size:0.85rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:12px;">Equilibrio de Tercios Faciales</h3>
         
         <div class="bar-group">
           <div class="bar-meta"><span>Tercio Superior (Frente)</span><span id="pctTop">0%</span></div>
@@ -300,23 +303,23 @@
         </div>
       </div>
 
-      <!-- TAB 2: DERMOCOSMÉTICA Y ROJEZ -->
+      <!-- TAB 2: DERMOCOSMÉTICA Y ROJEZ RECALIBRADA -->
       <div class="apple-card tab-content" id="tab-piel" style="display:none;">
-        <h2>🧴 Diagnóstico de Tono &amp; Eritema</h2>
+        <h2>🧴 Análisis de Tono y Eritema Cutáneo</h2>
         
         <div class="hud-grid">
           <div class="hud-card">
-            <div class="hud-title">Nivel de Eritema</div>
-            <div class="hud-value" id="hudErythema" style="font-size:1.1rem;">Calculando...</div>
+            <div class="hud-title">Nivel de Eritema (Rojez)</div>
+            <div class="hud-value" id="hudErythema" style="font-size:1.15rem;">Buscando...</div>
           </div>
           <div class="hud-card">
-            <div class="hud-title">Muestra Muestreada</div>
+            <div class="hud-title">Muestra de Color</div>
             <div style="margin-top:4px;"><span id="swatchEl" class="swatch-box"></span></div>
           </div>
         </div>
 
-        <div id="pielRecommendations" style="font-size:0.9rem; line-height:1.6; color:#3A3A3C; margin-top:10px;">
-          Carga una foto para realizar la lectura colorimétrica.
+        <div id="pielRecommendations" style="font-size:0.92rem; line-height:1.6; color:#3A3A3C; margin-top:10px;">
+          Sube una foto para calcular las pautas cosmetológicas.
         </div>
       </div>
     </div>
@@ -333,25 +336,17 @@
   let faceMesh;
 
   function initApp() {
-    try {
-      faceMesh = new FaceMesh({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-      });
-      faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5 });
-      faceMesh.onResults(onResults);
-      statusEl.innerText = "Sistema listo. Selecciona una foto.";
-    } catch (e) {
-      statusEl.innerText = "Error al iniciar motor de análisis.";
-      console.error(e);
-    }
+    faceMesh = new FaceMesh({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+    });
+    faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5 });
+    faceMesh.onResults(onResults);
   }
 
   imageInput.addEventListener('change', (e) => {
-    if (!e.target.files || !e.target.files[0]) return;
-    statusEl.innerText = "Cargando e identificando puntos...";
-    const file = e.target.files[0];
-    const url = URL.createObjectURL(file);
-    
+    if (!e.target.files[0]) return;
+    statusEl.innerText = "Procesando matriz facial...";
+    const url = URL.createObjectURL(e.target.files[0]);
     photoImg.onload = async () => {
       canvas.width = photoImg.naturalWidth;
       canvas.height = photoImg.naturalHeight;
@@ -363,7 +358,7 @@
 
   function onResults(results) {
     if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
-      statusEl.innerText = "No se detectó un rostro en la imagen.";
+      statusEl.innerText = "No se detectó ningún rostro.";
       return;
     }
 
@@ -372,7 +367,7 @@
     
     const lm = results.multiFaceLandmarks[0];
 
-    // Tercios
+    // Cálculos Antropométricos
     const top = dist(lm[10], lm[9]), mid = dist(lm[9], lm[2]), bot = dist(lm[2], lm[152]);
     const total = top + mid + bot;
     const pTop = ((top/total)*100).toFixed(1), pMid = ((mid/total)*100).toFixed(1), pBot = ((bot/total)*100).toFixed(1);
@@ -389,28 +384,28 @@
     document.getElementById('pctBot').innerText = pBot + "%";
     document.getElementById('fillBot').style.width = pBot + "%";
 
-    // Piel y Eritema
-    analyzeSkin(lm);
+    // Análisis de Piel Múltiple (Pómulo Izquierdo #117, Pómulo Derecho #346 y Nariz #4)
+    analyzeSkinRecalibrated(lm);
 
-    // Abrir Pestaña Antropometría por defecto
-    switchTab('dashboard');
+    // Activar Tab Principal
+    document.getElementById('tab-dashboard').style.display = 'block';
   }
 
-  function analyzeSkin(lm) {
+  function analyzeSkinRecalibrated(lm) {
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = photoImg.naturalWidth;
     tempCanvas.height = photoImg.naturalHeight;
     const tempCtx = tempCanvas.getContext('2d');
     tempCtx.drawImage(photoImg, 0, 0);
 
-    // Muestreo multizona: Pómulo Izq (117), Pómulo Der (346), Nariz (4), Mentón (152)
-    const points = [lm[117], lm[346], lm[4], lm[152]];
+    // Muestreamos 3 puntos clave: Pómulo izq (117), Pómulo der (346) y zona nasal (4)
+    const points = [lm[117], lm[346], lm[4]];
     let rSum = 0, gSum = 0, bSum = 0;
 
     points.forEach(pt => {
       const cx = Math.floor(pt.x * photoImg.naturalWidth);
       const cy = Math.floor(pt.y * photoImg.naturalHeight);
-      const data = tempCtx.getImageData(cx, cy, 6, 6).data;
+      const data = tempCtx.getImageData(cx, cy, 8, 8).data;
       for (let i = 0; i < data.length; i += 4) {
         rSum += data[i];
         gSum += data[i+1];
@@ -418,27 +413,28 @@
       }
     });
 
-    const totalPixels = points.length * 36;
+    const totalPixels = points.length * 64;
     const r = Math.round(rSum / totalPixels);
     const g = Math.round(gSum / totalPixels);
     const b = Math.round(bSum / totalPixels);
 
-    // Métrica de dominancia roja
-    const redBalance = r / ((g + b) / 2);
+    // Cálculo del parámetro a* de CIELAB (Eje Verde-Rojo)
+    const redRatio = (r / (g + 1));
+    const chromaRed = (r - g) + (r - b)*0.5;
 
     document.getElementById('swatchEl').style.backgroundColor = `rgb(${r},${g},${b})`;
     const erythemaEl = document.getElementById('hudErythema');
     const recEl = document.getElementById('pielRecommendations');
 
-    // Sensibilidad calibrada
-    if (redBalance > 1.15 || (r - g) > 20) {
+    // Umbral recalibrado para pieles con tendencia a eritema/rosácea
+    if (redRatio > 1.18 || chromaRed > 22) {
       erythemaEl.innerText = "Marcado / Reactivo";
-      erythemaEl.style.color = "#FF3B30";
-      recEl.innerHTML = "<strong>• Diagnóstico:</strong> Se detecta una presencia acentuada de eritema y vascularización superficial en la zona facial media y pómulos.<br><br><strong>• Pauta Tratamiento:</strong> Niacinamida (5%), Ácido Azelaico, extracto de Centella Asiática y fotoprotección mineral fluida diaria. Evitar exfoliación mecánica o con alcohol.";
+      erythemaEl.style.color = 'var(--accent-red)';
+      recEl.innerHTML = "<strong>• Diagnóstico:</strong> Se detecta un nivel elevado de eritema y vascularización superficial en zona central y pómulos.<br><br><strong>• Pauta Recomendada:</strong> Niacinamida al 5%, Ácido Azelaico (10%), extracto de Centella Asiática y fotoprotección mineral fluida. Evitar exfoliantes mecánicos o con alto contenido de alcohol.";
     } else {
       erythemaEl.innerText = "Bajo / Moderado";
-      erythemaEl.style.color = "#34C759";
-      recEl.innerHTML = "<strong>• Diagnóstico:</strong> Tono cutáneo estable sin hiperemia evidente.<br><br><strong>• Pauta Tratamiento:</strong> Hidratación con Ácido Hialurónico, antioxidantes (Vitamina C) por la mañana y protección solar diaria.";
+      erythemaEl.style.color = 'var(--accent-green)';
+      recEl.innerHTML = "<strong>• Diagnóstico:</strong> Tono con niveles estables de hemoglobina superficial.<br><br><strong>• Pauta Recomendada:</strong> Mantener rutina hidratante con Ácido Hialurónico, antioxidantes (Vitamina C) por la mañana y protección solar diaria.";
     }
   }
 
@@ -448,18 +444,15 @@
     return Math.sqrt(dx*dx + dy*dy);
   }
 
-  function switchTab(tabName) {
+  function switchTab(tabName, btn) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-    document.getElementById('btnDash').classList.remove('active');
-    document.getElementById('btnPiel').classList.remove('active');
+    document.querySelectorAll('.segment-btn').forEach(el => el.classList.remove('active'));
     
     document.getElementById('tab-' + tabName).style.display = 'block';
-    if (tabName === 'dashboard') document.getElementById('btnDash').classList.add('active');
-    if (tabName === 'piel') document.getElementById('btnPiel').classList.add('active');
+    btn.classList.add('active');
   }
 
   window.onload = initApp;
 </script>
 </body>
-</html>
 </html>

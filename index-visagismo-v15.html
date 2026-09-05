@@ -3,184 +3,188 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QOVES-Style Biometric Visagism Studio</title>
+  <title>Biometric Visagism Studio</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg-main: #FFFFFF;
-      --panel-bg: #F8FAFC;
-      --border-color: #CBD5E1;
-      --text-primary: #0F172A;
-      --text-secondary: #475569;
-      --accent-hud: #0284C7;
-      --accent-alert: #DC2626;
-      --accent-success: #16A34A;
-      --accent-overlay: #2563EB;
+      --google-bg: #FFFFFF;
+      --google-surface: #F8FAFC;
+      --google-border: #E2E8F0;
+      --google-blue: #1A73E8;
+      --google-green: #188038;
+      --google-red: #D93025;
+      --google-text-main: #202124;
+      --google-text-sub: #5F6368;
+      --google-shadow: 0 1px 3px rgba(60,64,67,0.12), 0 1px 2px rgba(60,64,67,0.24);
     }
 
     * { box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--bg-main);
-      color: var(--text-primary);
+      font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--google-bg);
+      color: var(--google-text-main);
       margin: 0;
-      padding: 30px 20px;
-      -webkit-font-smoothing: antialiased;
+      padding: 40px 24px;
+      line-height: 1.5;
     }
 
-    .container { max-width: 1080px; margin: 0 auto; }
+    .container { max-width: 1040px; margin: 0 auto; }
 
     header {
-      border-bottom: 2px solid var(--text-primary);
-      padding-bottom: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--google-border);
+      padding-bottom: 20px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: center;
     }
 
     h1 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--google-text-main);
       margin: 0;
-      text-transform: uppercase;
+      letter-spacing: -0.02em;
     }
 
     .subtitle {
-      color: var(--text-secondary);
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+      color: var(--google-text-sub);
+      font-size: 0.9rem;
       margin-top: 4px;
     }
 
     .card {
-      background: var(--panel-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
+      background: var(--google-surface);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+      border: 1px solid var(--google-border);
     }
 
     h2 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--google-text-main);
       margin-top: 0;
-      margin-bottom: 12px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 6px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     input[type="file"] {
       width: 100%;
-      padding: 10px;
+      padding: 16px;
       background: #FFFFFF;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 0.88rem;
+      border: 2px dashed var(--google-border);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-align: center;
+      color: var(--google-text-sub);
     }
+
+    input[type="file"]:hover { border-color: var(--google-blue); }
 
     .canvas-container {
       position: relative;
       width: 100%;
-      max-width: 640px;
-      margin: 0 auto 24px auto;
+      max-width: 600px;
+      margin: 0 auto 32px auto;
       display: none;
-      background: #E2E8F0;
-      border-radius: 8px;
+      background: #000;
+      border-radius: 16px;
       overflow: hidden;
-      border: 2px solid var(--text-primary);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
 
     canvas { width: 100%; height: auto; display: block; }
 
-    .module-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+    .module-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
     .module-btn {
       flex: 1;
-      min-width: 130px;
+      min-width: 150px;
       background: #FFFFFF;
-      color: var(--text-secondary);
-      border: 1px solid var(--border-color);
-      padding: 10px 12px;
-      border-radius: 6px;
-      font-size: 0.78rem;
-      font-weight: 700;
+      color: var(--google-text-sub);
+      border: 1px solid var(--google-border);
+      padding: 12px 16px;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      transition: all 0.2s ease;
+      text-align: center;
     }
 
     .module-btn.active {
-      background: var(--text-primary);
+      background: var(--google-blue);
       color: #FFFFFF;
-      border-color: var(--text-primary);
+      border-color: var(--google-blue);
+      box-shadow: var(--google-shadow);
     }
 
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
     }
 
     .metric-card {
       background: #FFFFFF;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 12px 14px;
+      border: 1px solid var(--google-border);
+      border-radius: 12px;
+      padding: 20px;
     }
 
-    .metric-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .metric-title { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; }
-    .metric-value { font-size: 1.25rem; font-weight: 800; color: var(--text-primary); font-family: monospace; }
-    .metric-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.3; }
+    .metric-title { font-size: 0.8rem; font-weight: 500; color: var(--google-text-sub); text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-value { font-size: 1.6rem; font-weight: 700; color: var(--google-blue); margin: 6px 0; font-family: 'Roboto Mono', monospace; }
+    .metric-desc { font-size: 0.85rem; color: var(--google-text-main); line-height: 1.4; }
 
     .rec-block {
       background: #FFFFFF;
-      border-left: 4px solid var(--text-primary);
-      padding: 12px 16px;
-      border-radius: 4px;
-      margin-top: 10px;
-      font-size: 0.85rem;
-      line-height: 1.5;
+      border-left: 4px solid var(--google-blue);
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-top: 14px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      border-top: 1px solid var(--google-border);
+      border-right: 1px solid var(--google-border);
+      border-bottom: 1px solid var(--google-border);
     }
 
-    .swatch-group { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
-    .swatch-item { text-align: center; font-size: 0.72rem; font-weight: 600; }
-    .swatch-box { width: 44px; height: 44px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 4px; }
+    .swatch-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin: 16px 0; }
+    .swatch-item { background: #FFFFFF; border: 1px solid var(--google-border); border-radius: 10px; padding: 12px; text-align: center; font-size: 0.8rem; }
+    .swatch-box { width: 100%; height: 48px; border-radius: 6px; margin-bottom: 8px; border: 1px solid rgba(0,0,0,0.1); }
 
     pre {
-      background: #0F172A;
+      background: #1E293B;
       color: #38BDF8;
-      padding: 14px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      padding: 18px;
+      border-radius: 12px;
+      font-size: 0.85rem;
       overflow-x: auto;
       white-space: pre-wrap;
+      font-family: 'Roboto Mono', monospace;
     }
 
     button.action-btn {
-      background: var(--text-primary);
+      background: var(--google-blue);
       color: #FFFFFF;
       border: none;
-      padding: 10px 16px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      border-radius: 6px;
+      padding: 12px 24px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-radius: 24px;
       cursor: pointer;
-      text-transform: uppercase;
       width: 100%;
     }
   </style>
@@ -190,23 +194,23 @@
 <div class="container">
   <header>
     <div>
-      <h1>QOVES-Style Biometric Studio</h1>
-      <div class="subtitle">Análisis Cuantitativo · Malla Facial 468 Puntos · Visagismo Clínico</div>
+      <h1>Biometric Visagism Studio</h1>
+      <div class="subtitle">Análisis estructural, tono cutáneo y patrones de laxitud facial</div>
     </div>
-    <div id="status" style="font-size: 0.78rem; font-weight: 700; color: var(--accent-hud);">ESPERANDO FOTO</div>
+    <div id="status" style="font-size: 0.85rem; font-weight: 500; color: var(--google-blue);">Listo para escanear</div>
   </header>
 
-  <!-- PROTOCOLO ESTÁNDAR PARA EL SUJETO -->
-  <div class="card" style="border-left: 4px solid var(--accent-hud);">
-    <h2>Protocolo Clínico de Estantardización Fotográfica</h2>
-    <div style="font-size: 0.83rem; color: var(--text-secondary); line-height: 1.5;">
-      • <b>Sello Palatino:</b> Mantener el cuerpo de la lengua pegado al paladar duro. Esto estandariza la zona submental y el ángulo cervicofacial.<br>
-      • <b>Mirada en Plano de Frankfort:</b> Cabeza neutra, mirada fija al frente, barbilla paralela al suelo. Evitar gestos orofaciales activos.
+  <!-- PROTOCOLO CLÍNICO UNIVERSAL -->
+  <div class="card" style="border-left: 4px solid var(--google-blue);">
+    <h2>Protocolo de Captura Estándar</h2>
+    <div style="font-size: 0.88rem; color: var(--google-text-sub); line-height: 1.6;">
+      • <b>Sello Palatino:</b> Indicar al sujeto que apoye la lengua completa en el paladar duro para estandarizar el área submental.<br>
+      • <b>Expresión Neutra:</b> Rostro relajado, sin sonreír ni forzar la mirada. Cabeza alineada en plano horizontal.
     </div>
   </div>
 
   <div class="card">
-    <h2>Carga de Muestra</h2>
+    <h2>Cargar Imagen del Cliente</h2>
     <input type="file" id="imageInput" accept="image/*" />
   </div>
 
@@ -216,77 +220,67 @@
   </div>
 
   <div class="module-nav" id="moduleNav" style="display:none;">
-    <button class="module-btn active" data-module="mesh">Malla 468P (QOVES HUD)</button>
-    <button class="module-btn" data-module="asimetria">Simetría &amp; Órbita Ocular</button>
-    <button class="module-btn" data-module="arrugas">Vectores de Tensión Dermis</button>
-    <button class="module-btn" data-module="piel">Muestreo Espectral Piel (Multizona)</button>
-    <button class="module-btn" data-module="guasha">Ruta Linfática Facial Completa</button>
+    <button class="module-btn active" data-module="mesh">Malla HD 468 Puntos</button>
+    <button class="module-btn" data-module="asimetria">Simetría de la Mirada</button>
+    <button class="module-btn" data-module="laxitud">Laxitud &amp; Vectores de Caída</button>
+    <button class="module-btn" data-module="piel">Colorimetría Multizona</button>
+    <button class="module-btn" data-module="guasha">Drenaje Linfático</button>
   </div>
 
   <!-- DASHBOARD PRINCIPAL EXPLICADO -->
   <div class="card" id="dashboardCard" style="display:none;">
-    <h2>Dashboard Biométrico de Tercios &amp; Estructura</h2>
+    <h2>Dashboard Biométrico de Estructura</h2>
     <div class="dashboard-grid">
       <div class="metric-card">
-        <div class="metric-header"><span class="metric-title">Forma Facial</span></div>
+        <div class="metric-title">Forma Facial</div>
         <div class="metric-value" id="mShape">-</div>
-        <div class="metric-desc">Basado en el índice de proporcionalidad entre la anchura bicigomática y la altura facial total.</div>
+        <div class="metric-desc" id="mShapeDesc">-</div>
       </div>
       <div class="metric-card">
-        <div class="metric-header"><span class="metric-title">Ratio Largo / Ancho</span></div>
+        <div class="metric-title">Ratio Largo / Ancho</div>
         <div class="metric-value" id="mRatioHW">-</div>
-        <div class="metric-desc">Rango ideal QOVES: 1.30 a 1.45. Valores superiores indican morfología alargada; inferiores, redonda o cuadrada.</div>
+        <div class="metric-desc">Proporción ideal: 1.30 a 1.45. Define si la estructura necesita volumen lateral o alargamiento óptico.</div>
       </div>
       <div class="metric-card">
-        <div class="metric-header"><span class="metric-title">Tercio Superior (1/3)</span></div>
-        <div class="metric-value" id="mThirdUpper">-</div>
-        <div class="metric-desc">Tricofión a Glabela. Rango canónico ideal: 33.3% del total facial.</div>
+        <div class="metric-title">Proporción de Tercios</div>
+        <div class="metric-value" id="mThirds">-</div>
+        <div class="metric-desc" id="mThirdsDesc">-</div>
       </div>
       <div class="metric-card">
-        <div class="metric-header"><span class="metric-title">Tercio Medio (1/3)</span></div>
-        <div class="metric-value" id="mThirdMiddle">-</div>
-        <div class="metric-desc">Glabela a Subnasal. Determina el desarrollo del complejo maxilar medio.</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-header"><span class="metric-title">Tercio Inferior (1/3)</span></div>
-        <div class="metric-value" id="mThirdLower">-</div>
-        <div class="metric-desc">Subnasal a Mentón. Refleja la proyección de la mandíbula y altura alveolar.</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-header"><span class="metric-title">Dimorfismo Mandibular</span></div>
+        <div class="metric-title">Proporción Mandibular</div>
         <div class="metric-value" id="mJawRatio">-</div>
-        <div class="metric-desc">Ratio ancho Bigonial / Ancho Bicigomático. Rango estructural típico: 70% - 85%.</div>
+        <div class="metric-desc" id="mJawDesc">-</div>
       </div>
     </div>
   </div>
 
-  <!-- SECCIONES DE DETALLE -->
+  <!-- SECCIONES DINÁMICAS -->
   <div id="asimetriaCard" class="card" style="display:none;">
-    <h2>Análisis de Simetría Cantal y Arco Supraciliar</h2>
+    <h2>Análisis Biométrico de la Mirada</h2>
     <div id="asimetriaRec" class="rec-block"></div>
   </div>
 
-  <div id="arrugasCard" class="card" style="display:none;">
-    <h2>Cartografía de Líneas de Tensión Dinámica</h2>
-    <div id="arrugasRec" class="rec-block"></div>
+  <div id="laxitudCard" class="card" style="display:none;">
+    <h2>Análisis de Laxitud &amp; Vectores Gravitacionales</h2>
+    <div id="laxitudRec" class="rec-block"></div>
   </div>
 
   <div id="pielCard" class="card" style="display:none;">
-    <h2>Muestreo Espectral Multizona (Frente, Pómulos, Barbilla)</h2>
+    <h2>Análisis Cromático &amp; Diagnóstico Cutáneo</h2>
     <div class="swatch-group" id="pielSwatches"></div>
     <div id="pielRec" class="rec-block"></div>
   </div>
 
   <div id="guaShaCard" class="card" style="display:none;">
-    <h2>Mapa de Drenaje Linfático Facial Integrado</h2>
+    <h2>Protocolo Personalizado Gua Sha</h2>
     <div id="guaShaRec" class="rec-block"></div>
   </div>
 
-  <!-- REGISTRO TÉCNICO EXPORTABLE -->
+  <!-- REGISTRO JSON EXPORTABLE -->
   <div class="card" id="resultsCard" style="display:none;">
-    <h2>Datos Biométricos Exportables (JSON)</h2>
+    <h2>Exportación de Datos Biométricos (JSON)</h2>
     <pre id="jsonOutput"></pre>
-    <button id="copyBtn" class="action-btn" style="margin-top:10px;">Copiar JSON de Muestra</button>
+    <button id="copyBtn" class="action-btn" style="margin-top:12px;">Copiar JSON</button>
   </div>
 </div>
 
@@ -322,7 +316,7 @@
       canvas.width = photoImg.naturalWidth;
       canvas.height = photoImg.naturalHeight;
       canvasContainer.style.display = 'block';
-      statusEl.innerText = "PROCESANDO PUNTOS...";
+      statusEl.innerText = "Procesando malla biométrica...";
       await faceMesh.send({ image: photoImg });
     };
     photoImg.src = url;
@@ -330,15 +324,15 @@
 
   function onResults(results) {
     if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
-      statusEl.innerText = "ERROR DE DETECCIÓN";
-      alert("No se detectó estructura facial en la imagen.");
+      statusEl.innerText = "Error en detección";
+      alert("No se detectó un rostro válido.");
       return;
     }
 
     const lm = results.multiFaceLandmarks[0];
     lastLandmarks = lm;
 
-    // METRICAS CLAVE DEDUCIDAS DE LANDMARKS
+    // METRICAS FACIALES
     const totalHeight = dist(lm[10], lm[152]);
     const faceWidth = dist(lm[234], lm[454]);
     const jawWidth = dist(lm[58], lm[288]);
@@ -348,41 +342,59 @@
     const lowerThird = dist(lm[2], lm[152]);
 
     const ratioHW = (totalHeight / faceWidth).toFixed(2);
-    const jawRatio = ((jawWidth / faceWidth) * 100).toFixed(1);
+    const jawRatioVal = Math.round((jawWidth / faceWidth) * 100);
 
-    const upPct = ((upperThird / totalHeight) * 100).toFixed(1);
-    const midPct = ((middleThird / totalHeight) * 100).toFixed(1);
-    const lowPct = ((lowerThird / totalHeight) * 100).toFixed(1);
+    const upPct = Math.round((upperThird / totalHeight) * 100);
+    const midPct = Math.round((middleThird / totalHeight) * 100);
+    const lowPct = Math.round((lowerThird / totalHeight) * 100);
 
-    // Asimetría cantal y supraciliar
-    const leftEyeY = px(lm[33]).y;
-    const rightEyeY = px(lm[263]).y;
-    const eyeTiltDiff = Math.abs(leftEyeY - rightEyeY).toFixed(1);
-
-    const leftBrowY = px(lm[55]).y;
-    const rightBrowY = px(lm[285]).y;
-    const browTiltDiff = Math.abs(leftBrowY - rightBrowY).toFixed(1);
+    // Asimetría de la mirada
+    const eyeL = px(lm[33]), eyeR = px(lm[263]);
+    const eyeDiff = Math.abs(eyeL.y - eyeR.y).toFixed(1);
 
     let shape = "Ovalada";
-    if (ratioHW > 1.45) shape = "Oblonga / Alargada";
-    else if (jawRatio > 85) shape = "Cuadrada / Rectangular";
-    else if (ratioHW < 1.25) shape = "Redonda";
+    let shapeDesc = "Proporciones equilibradas. Admite casi cualquier estilo de visagismo.";
+    if (ratioHW > 1.45) {
+      shape = "Alargada";
+      shapeDesc = "Estructura vertical dominante. Se recomienda añadir volumen lateral.";
+    } else if (jawRatioVal > 85) {
+      shape = "Cuadrada / Angular";
+      shapeDesc = "Ángulos mandibulares marcados. Conviene suavizar contornos con líneas curvas.";
+    } else if (ratioHW < 1.28) {
+      shape = "Redonda";
+      shapeDesc = "Anchura y altura muy parecidas. Se recomienda estilizar visualmente el centro.";
+    }
+
+    let jawInterpretation = "";
+    if (jawRatioVal > 85) {
+      jawInterpretation = "Mandíbula ancha y estructurada (masculina o de alta definición). Aporta firmeza visual.";
+    } else if (jawRatioVal >= 72 && jawRatioVal <= 85) {
+      jawInterpretation = "Proporción mandibular ideal (72%-85%). Total equilibrio con los pómulos.";
+    } else {
+      jawInterpretation = "Mandíbula estrecha o estilizada. La cara se afila hacia el mentón.";
+    }
+
+    let thirdDominant = "Equilibrados";
+    if (upPct > midPct && upPct > lowPct) thirdDominant = "Tercio Superior Dominante (Frente amplia)";
+    else if (midPct > upPct && midPct > lowPct) thirdDominant = "Tercio Medio Dominante (Pómulos/Nariz)";
+    else if (lowPct > upPct && lowPct > midPct) thirdDominant = "Tercio Inferior Dominante (Zona Mandibular)";
 
     computedData = {
-      morfologiaGeneral: { forma: shape, ratioAltoAncho: parseFloat(ratioHW), anchoBicigomaticoPx: Math.round(faceWidth), altoTotalPx: Math.round(totalHeight) },
-      terciosProporciones: { superiorPct: upPct + "%", medioPct: midPct + "%", inferiorPct: lowPct + "%" },
-      morfometriaMandibular: { ratioBigonialBicigomatico: jawRatio + "%" },
-      simetriaOcularYSupraciliar: { desnivelCantalPx: parseFloat(eyeTiltDiff), desnivelCejasPx: parseFloat(browTiltDiff) },
+      morfologia: { forma: shape, ratioAltoAncho: parseFloat(ratioHW), anchoPx: Math.round(faceWidth), altoPx: Math.round(totalHeight) },
+      terciosProporciones: { superior: upPct + "%", medio: midPct + "%", inferior: lowPct + "%", interpretacion: thirdDominant },
+      mandibula: { ratioBigonial: jawRatioVal + "%", evaluacion: jawInterpretation },
+      asimetriaMirada: { desnivelOcularPx: parseFloat(eyeDiff) },
       timestamp: new Date().toISOString()
     };
 
-    // ACTUALIZAR DASHBOARD
+    // DASHBOARD UPDATE
     document.getElementById('mShape').innerText = shape;
+    document.getElementById('mShapeDesc').innerText = shapeDesc;
     document.getElementById('mRatioHW').innerText = ratioHW;
-    document.getElementById('mThirdUpper').innerText = upPct + "%";
-    document.getElementById('mThirdMiddle').innerText = midPct + "%";
-    document.getElementById('mThirdLower').innerText = lowPct + "%";
-    document.getElementById('mJawRatio').innerText = jawRatio + "%";
+    document.getElementById('mThirds').innerText = `${upPct}% / ${midPct}% / ${lowPct}%`;
+    document.getElementById('mThirdsDesc').innerText = thirdDominant;
+    document.getElementById('mJawRatio').innerText = jawRatioVal + "%";
+    document.getElementById('mJawDesc').innerText = jawInterpretation;
 
     document.getElementById('jsonOutput').innerText = JSON.stringify(computedData, null, 2);
 
@@ -390,7 +402,7 @@
     document.getElementById('resultsCard').style.display = 'block';
     document.getElementById('moduleNav').style.display = 'flex';
 
-    statusEl.innerText = "ESCANEO FINALIZADO";
+    statusEl.innerText = "Escaneo completado";
     setActiveModule('mesh');
   }
 
@@ -398,35 +410,38 @@
     document.querySelectorAll('.module-btn').forEach(b => b.classList.toggle('active', b.dataset.module === mod));
 
     document.getElementById('asimetriaCard').style.display = (mod === 'asimetria') ? 'block' : 'none';
-    document.getElementById('arrugasCard').style.display = (mod === 'arrugas') ? 'block' : 'none';
+    document.getElementById('laxitudCard').style.display = (mod === 'laxitud') ? 'block' : 'none';
     document.getElementById('pielCard').style.display = (mod === 'piel') ? 'block' : 'none';
     document.getElementById('guaShaCard').style.display = (mod === 'guasha') ? 'block' : 'none';
 
     if (!lastLandmarks) return;
 
-    if (mod === 'mesh') drawFullDenseHUD(lastLandmarks);
-    if (mod === 'asimetria') drawSymmetryModule(lastLandmarks);
-    if (mod === 'arrugas') drawStressVectors(lastLandmarks);
-    if (mod === 'piel') drawMultiZoneSkinSample(lastLandmarks);
-    if (mod === 'guasha') drawFullFaceGuaSha(lastLandmarks);
+    if (mod === 'mesh') drawFullDense468Mesh(lastLandmarks);
+    if (mod === 'asimetria') drawAsymmetryModule(lastLandmarks);
+    if (mod === 'laxitud') drawLaxityAndGravityVectors(lastLandmarks);
+    if (mod === 'piel') analyzeSkinColors(lastLandmarks);
+    if (mod === 'guasha') drawFullGuaShaProtocol(lastLandmarks);
   }
 
-  // 1. MALLA QOVES DENSA (DIBUJA LOS 468 PUNTOS PUNTUALES MÁS LÍNEAS GRUESAS)
-  function drawFullDenseHUD(lm) {
+  // 1. DIBUJO ULTRA CLARO DE LOS 468 PUNTOS
+  function drawFullDense468Mesh(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Dibujar los 468 puntos individuales con grosor para efecto escaneo denso
+    // Dibuja los 468 puntos bien visibles (blancos con borde azul)
     for (let i = 0; i < lm.length; i++) {
       const p = px(lm[i]);
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 2.2, 0, 2 * Math.PI);
-      ctx.fillStyle = "#0284C7";
+      ctx.arc(p.x, p.y, 2.8, 0, 2 * Math.PI);
+      ctx.fillStyle = "#FFFFFF";
       ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#1A73E8";
+      ctx.stroke();
     }
 
-    // Vectores principales gruesos (Contornos de ojos, labios, arco mandibular)
-    ctx.strokeStyle = "#2563EB";
-    ctx.lineWidth = 3.5;
+    // Líneas conectoras clave
+    ctx.strokeStyle = "#188038";
+    ctx.lineWidth = 2.5;
 
     const drawPath = (indices) => {
       ctx.beginPath();
@@ -438,74 +453,86 @@
       ctx.stroke();
     };
 
-    drawPath([33, 160, 158, 133, 153, 144]); // Ojo Izquierdo
-    drawPath([362, 385, 387, 263, 373, 380]); // Ojo Derecho
-    drawPath([61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146]); // Órgano Bucal
-    drawPath([10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109]); // Contorno Oval
+    drawPath([33, 160, 158, 133, 153, 144]);
+    drawPath([362, 385, 387, 263, 373, 380]);
+    drawPath([61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146]);
   }
 
-  // 2. MÓDULO GENERAL DE SIMETRÍA
-  function drawSymmetryModule(lm) {
+  // 2. MÓDULO DE ASIMETRÍA
+  function drawAsymmetryModule(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const eyeL = px(lm[33]), eyeR = px(lm[263]);
     const browL = px(lm[55]), browR = px(lm[285]);
 
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "#DC2626";
-
-    // Eje horizontal cantal
-    ctx.beginPath(); ctx.moveTo(eyeL.x - 30, eyeL.y); ctx.lineTo(eyeR.x + 30, eyeR.y); ctx.stroke();
-    // Eje horizontal supraciliar
-    ctx.beginPath(); ctx.moveTo(browL.x - 30, browL.y); ctx.lineTo(browR.x + 30, browR.y); ctx.stroke();
-
-    const eyeDiff = computedData.simetriaOcularYSupraciliar.desnivelCantalPx;
-    const browDiff = computedData.simetriaOcularYSupraciliar.desnivelCejasPx;
-
-    document.getElementById('asimetriaRec').innerHTML = `
-      <b>Evaluación de Simetría Bilateral:</b><br>
-      • <b>Desnivel Cantal (Ojos):</b> ${eyeDiff} px.<br>
-      • <b>Desnivel Supraciliar (Cejas):</b> ${browDiff} px.<br>
-      <i>Interpretación:</i> Desnivel inferior a 5px es considerado dentro de los márgenes fisiológicos de simetría estructural. Desviaciones mayores sugieren hábitos gesticulares unilaterales o diferencias de tono en el músculo orbicular.
-    `;
-  }
-
-  // 3. VECTORES DE TENSIÓN
-  function drawStressVectors(lm) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#DC2626";
     ctx.lineWidth = 3.5;
+    ctx.strokeStyle = "#D93025";
 
-    // Frente
-    const fCenter = px(lm[10]), fLeft = px(lm[71]), fRight = px(lm[301]);
-    for (let offset = -15; offset <= 15; offset += 15) {
-      ctx.beginPath();
-      ctx.moveTo(fLeft.x, fLeft.y + offset);
-      ctx.quadraticCurveTo(fCenter.x, fCenter.y + offset - 6, fRight.x, fRight.y + offset);
-      ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(eyeL.x - 40, eyeL.y); ctx.lineTo(eyeR.x + 40, eyeR.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(browL.x - 40, browL.y); ctx.lineTo(browR.x + 40, browR.y); ctx.stroke();
+
+    const eyeDiff = computedData.asimetriaMirada.desnivelOcularPx;
+
+    let evalText = "";
+    if (eyeDiff < 4.0) {
+      evalText = "<b>Simetría Ocular Alta:</b> La inclinación entre ambos ojos es casi imperceptible (<4px). Indica un equilibrio muscular muy estable.";
+    } else if (eyeDiff >= 4.0 && eyeDiff <= 8.0) {
+      evalText = "<b>Asimetría Fisiológica Normal:</b> Existe una ligera diferencia de nivel (4-8px), totalmente natural por la dominancia visual o masticatoria.";
+    } else {
+      evalText = "<b>Asimetría Marcada:</b> Hay un desnivel claro (>8px). Se recomienda revisar si se debe a tensión muscular unilateral o posturas al dormir.";
     }
 
-    // Nasogenianos
-    const nL = px(lm[205]), lipL = px(lm[61]);
-    const nR = px(lm[425]), lipR = px(lm[291]);
-    ctx.beginPath(); ctx.moveTo(nL.x, nL.y); ctx.lineTo(lipL.x, lipL.y); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(nR.x, nR.y); ctx.lineTo(lipR.x, lipR.y); ctx.stroke();
-
-    document.getElementById('arrugasRec').innerHTML = `
-      Mapeo analítico de líneas de tensión sobre vientre frontal y surcos nasogenianos.
+    document.getElementById('asimetriaRec').innerHTML = `
+      <h3>Diagnóstico de Alineación de Ojos y Cejas</h3>
+      <p><b>Diferencia de altura en ojos:</b> ${eyeDiff} px</p>
+      <p>${evalText}</p>
+      <p><b>Consejo práctico:</b> Si vas a corregir con visagismo (maquillaje, cejas o peinado), compensa el lado más bajo elevando ligeramente el arco de la ceja de ese lado.</p>
     `;
   }
 
-  // 4. MUESTREO MULTIZONA DE PIEL
-  function drawMultiZoneSkinSample(lm) {
+  // 3. LAXITUD Y CAÍDA REALISTA (VECTORES HACIA ABAJO)
+  function drawLaxityAndGravityVectors(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const zones = [
-      { name: "Frente", point: px(lm[10]) },
-      { name: "Pómulo Izq", point: px(lm[117]) },
-      { name: "Pómulo Der", point: px(lm[346]) },
-      { name: "Barbilla", point: px(lm[152]) }
-    ];
+    const drawVectorDown = (pFrom, length) => {
+      const f = px(pFrom);
+      ctx.strokeStyle = "#D93025";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(f.x, f.y);
+      ctx.lineTo(f.x, f.y + length);
+      ctx.stroke();
+
+      // Flecha hacia abajo
+      ctx.beginPath();
+      ctx.moveTo(f.x - 5, f.y + length - 6);
+      ctx.lineTo(f.x, f.y + length);
+      ctx.lineTo(f.x + 5, f.y + length - 6);
+      ctx.fillStyle = "#D93025";
+      ctx.fill();
+    };
+
+    // Puntos sensibles al descolgamiento por gravedad
+    drawVectorDown(lm[205], 25); // Nasogeniano Izq
+    drawVectorDown(lm[425], 25); // Nasogeniano Der
+    drawVectorDown(lm[152], 30); // Mentón / Papada
+    drawVectorDown(lm[58], 25);  // Ángulo Mandibular Izq
+    drawVectorDown(lm[288], 25); // Ángulo Mandibular Der
+
+    document.getElementById('laxitudRec').innerHTML = `
+      <h3>Evaluación de Caída Gravitacional y Flacidez</h3>
+      <p>Las flechas rojas marcan los puntos donde el rostro tiende a ceder por la gravedad con los años:</p>
+      <ul>
+        <li><b>Surcos Nasogenianos:</b> Pérdida de soporte en la grasa del pómulo.</li>
+        <li><b>Línea Mandibular y Mentón:</b> Pérdida de firmeza por postura o pérdida de tono en el músculo platisma.</li>
+      </ul>
+      <p><b>Acción Recomendada:</b> Trabajar masajes de remodelación ascendentes (efecto lifting) para contrarrestar estas líneas rojas de caída.</p>
+    `;
+  }
+
+  // 4. COLORIMETRÍA MULTIZONA REAL (FRENTE, PÓMULOS Y MENTÓN) CON DIAGNÓSTICO
+  function analyzeSkinColors(lm) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const sampleCanvas = document.createElement('canvas');
     sampleCanvas.width = photoImg.naturalWidth;
@@ -513,40 +540,69 @@
     const sCtx = sampleCanvas.getContext('2d');
     sCtx.drawImage(photoImg, 0, 0);
 
-    let swatchHTML = "";
+    const getRGB = (point) => {
+      const p = px(point);
+      const data = sCtx.getImageData(Math.round(p.x), Math.round(p.y), 1, 1).data;
+      return { r: data[0], g: data[1], b: data[2], hex: `#${((1 << 24) + (data[0] << 16) + (data[1] << 8) + data[2]).toString(16).slice(1)}` };
+    };
 
+    const zones = [
+      { name: "Centro de la Frente", point: lm[10], color: getRGB(lm[10]) },
+      { name: "Pómulo Izquierdo", point: lm[117], color: getRGB(lm[117]) },
+      { name: "Pómulo Derecho", point: lm[346], color: getRGB(lm[346]) },
+      { name: "Mentón", point: lm[152], color: getRGB(lm[152]) }
+    ];
+
+    let swatchesHTML = "";
     zones.forEach(z => {
-      const pixel = sCtx.getImageData(Math.round(z.point.x), Math.round(z.point.y), 1, 1).data;
-      const hex = `#${((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1)}`;
-
-      ctx.strokeStyle = "#16A34A";
+      const p = px(z.point);
+      ctx.strokeStyle = "#188038";
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.arc(z.point.x, z.point.y, 16, 0, 2 * Math.PI);
+      ctx.arc(p.x, p.y, 18, 0, 2 * Math.PI);
       ctx.stroke();
 
-      swatchHTML += `
+      swatchesHTML += `
         <div class="swatch-item">
-          <div class="swatch-box" style="background:${hex};"></div>
-          <div>${z.name}</div>
-          <div style="font-family:monospace; color:var(--text-secondary);">${hex}</div>
+          <div class="swatch-box" style="background:${z.color.hex};"></div>
+          <b>${z.name}</b>
+          <div style="font-family:'Roboto Mono', monospace; color:var(--google-text-sub); margin-top:2px;">${z.color.hex}</div>
         </div>
       `;
     });
 
-    document.getElementById('pielSwatches').innerHTML = swatchHTML;
+    // Comparación simple de variaciones de color entre zonas
+    const rDiff = Math.abs(zones[1].color.r - zones[2].color.r);
+    const foreheadChinDiff = Math.abs(zones[0].color.r - zones[3].color.r);
+
+    let skinDiag = "";
+    if (rDiff > 15) {
+      skinDiag += "• <b>Desigualdad entre Pómulos:</b> Hay una diferencia notable de tono entre el pómulo izquierdo y el derecho (posible rojez localizada o exposición solar descompensada al conducir).<br>";
+    } else {
+      skinDiag += "• <b>Tono de Mejillas Uniforme:</b> Pigmentación muy homogénea entre ambos lados del rostro.<br>";
+    }
+
+    if (foreheadChinDiff > 20) {
+      skinDiag += "• <b>Variación Frente-Mentón:</b> La frente presenta un tono distinto al mentón, muy habitual por brillo en zona T o sombra submental.";
+    } else {
+      skinDiag += "• <b>Piel Equilibrada:</b> Tono constante en la zona central del rostro.";
+    }
+
+    document.getElementById('pielSwatches').innerHTML = swatchesHTML;
     document.getElementById('pielRec').innerHTML = `
-      Muestreo cromático multizona para análisis de uniformidad del tono cutáneo y discrepancias fototípicas regionales.
+      <h3>Diagnóstico de Tono &amp; Problemas Detectados</h3>
+      <p>${skinDiag}</p>
+      <p><b>Consejos de corrección:</b> Usar base o corrector para unificar zonas con rojeces o sombras antes de cualquier trabajo de imagen o fotografía.</p>
     `;
   }
 
-  // 5. GUA SHA INTEGRAL (COBERTURA FACIAL COMPLETA)
-  function drawFullFaceGuaSha(lm) {
+  // 5. GUA SHA COMPLETO (SABEN HACIA DÓNDE IR LAS MANOS)
+  function drawFullGuaShaProtocol(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#16A34A";
+    ctx.strokeStyle = "#188038";
     ctx.lineWidth = 4;
 
-    const drawLine = (pFrom, pTo) => {
+    const drawUpArrow = (pFrom, pTo) => {
       const f = px(pFrom), t = px(pTo);
       ctx.beginPath();
       ctx.moveTo(f.x, f.y);
@@ -554,24 +610,21 @@
       ctx.stroke();
     };
 
-    // Mandíbula y Cuello
-    drawLine(lm[152], lm[234]);
-    drawLine(lm[152], lm[454]);
-    
-    // Mejillas y Pómulos
-    drawLine(lm[61], lm[127]);
-    drawLine(lm[291], lm[356]);
-    
-    // Contorno Periorbitario Superior
-    drawLine(lm[70], lm[139]);
-    drawLine(lm[300], lm[368]);
-
-    // Frente Ascendente
-    drawLine(lm[9], lm[10]);
+    // Toda la cara: desde el centro hacia las orejas y hacia arriba
+    drawUpArrow(lm[152], lm[234]); // Cuello/Mentón a oreja Izq
+    drawUpArrow(lm[152], lm[454]); // Cuello/Mentón a oreja Der
+    drawUpArrow(lm[61], lm[127]);   // Mejilla a sien Izq
+    drawUpArrow(lm[291], lm[356]);  // Mejilla a sien Der
+    drawUpArrow(lm[9], lm[10]);     // Entrecejo hacia arriba (Frente)
 
     document.getElementById('guaShaRec').innerHTML = `
-      <b>Ruta de Drenaje Linfático Facial Integral:</b><br>
-      Vectores trazados para abarcar cuello, contorno mandibular, arco cigomático, región periocular y vientre frontal ascendente hacia ganglios linfáticos retroauriculares.
+      <h3>Ruta Completa de Masaje Facial Gua Sha</h3>
+      <p>Las líneas verdes indican la dirección <b>correcta</b> del masaje (siempre hacia afuera y hacia arriba para drenar toxinas hacia las orejas y el cuello):</p>
+      <ol>
+        <li><b>Línea Mandibular:</b> Desliza desde el mentón hasta el lóbulo de la oreja.</li>
+        <li><b>Pómulos:</b> Desde la comisura de la boca hacia la sien.</li>
+        <li><b>Frente:</b> Desde las cejas hacia el nacimiento del pelo.</li>
+      </ol>
     `;
   }
 
@@ -581,8 +634,9 @@
 
   document.getElementById('copyBtn').addEventListener('click', () => {
     navigator.clipboard.writeText(JSON.stringify(computedData, null, 2));
-    alert("Reporte exportado correctamente.");
+    alert("Datos biométricos copiados al portapapeles.");
   });
 </script>
 </body>
+</html>
 </html>

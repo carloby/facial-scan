@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Biometric Visagism Studio</title>
+  <title>Biometric Visagism Studio - Clinical Grade</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --google-bg: #FFFFFF;
       --google-surface: #F8FAFC;
-      --google-border: #E2E8F0;
+      --google-border: #CBD5E1;
       --google-blue: #1A73E8;
       --google-green: #188038;
       --google-red: #D93025;
-      --google-text-main: #202124;
-      --google-text-sub: #5F6368;
-      --google-shadow: 0 1px 3px rgba(60,64,67,0.12), 0 1px 2px rgba(60,64,67,0.24);
+      --google-text-main: #0F172A;
+      --google-text-sub: #475569;
+      --google-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
     * { box-sizing: border-box; }
@@ -40,7 +40,7 @@
 
     header {
       margin-bottom: 32px;
-      border-bottom: 1px solid var(--google-border);
+      border-bottom: 2px solid var(--google-text-main);
       padding-bottom: 20px;
       display: flex;
       justify-content: space-between;
@@ -53,12 +53,15 @@
       color: var(--google-text-main);
       margin: 0;
       letter-spacing: -0.02em;
+      text-transform: uppercase;
     }
 
     .subtitle {
       color: var(--google-text-sub);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 500;
       margin-top: 4px;
+      letter-spacing: 0.05em;
     }
 
     .card {
@@ -71,13 +74,12 @@
 
     h2 {
       font-size: 1.1rem;
-      font-weight: 500;
+      font-weight: 700;
       color: var(--google-text-main);
       margin-top: 0;
       margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
 
     input[type="file"] {
@@ -88,22 +90,21 @@
       border-radius: 12px;
       font-size: 0.9rem;
       cursor: pointer;
-      text-align: center;
       color: var(--google-text-sub);
+      font-weight: 500;
     }
-
-    input[type="file"]:hover { border-color: var(--google-blue); }
 
     .canvas-container {
       position: relative;
       width: 100%;
-      max-width: 600px;
+      max-width: 640px;
       margin: 0 auto 32px auto;
       display: none;
       background: #000;
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      box-shadow: var(--google-shadow);
+      border: 2px solid var(--google-text-main);
     }
 
     canvas { width: 100%; height: auto; display: block; }
@@ -117,11 +118,11 @@
       border: 1px solid var(--google-border);
       padding: 12px 16px;
       border-radius: 24px;
-      font-size: 0.85rem;
-      font-weight: 500;
+      font-size: 0.82rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s ease;
       text-align: center;
+      text-transform: uppercase;
     }
 
     .module-btn.active {
@@ -144,14 +145,14 @@
       padding: 20px;
     }
 
-    .metric-title { font-size: 0.8rem; font-weight: 500; color: var(--google-text-sub); text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-title { font-size: 0.8rem; font-weight: 700; color: var(--google-text-sub); text-transform: uppercase; }
     .metric-value { font-size: 1.6rem; font-weight: 700; color: var(--google-blue); margin: 6px 0; font-family: 'Roboto Mono', monospace; }
     .metric-desc { font-size: 0.85rem; color: var(--google-text-main); line-height: 1.4; }
 
     .rec-block {
       background: #FFFFFF;
-      border-left: 4px solid var(--google-blue);
-      padding: 16px 20px;
+      border-left: 5px solid var(--google-blue);
+      padding: 18px 22px;
       border-radius: 8px;
       margin-top: 14px;
       font-size: 0.9rem;
@@ -163,10 +164,10 @@
 
     .swatch-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin: 16px 0; }
     .swatch-item { background: #FFFFFF; border: 1px solid var(--google-border); border-radius: 10px; padding: 12px; text-align: center; font-size: 0.8rem; }
-    .swatch-box { width: 100%; height: 48px; border-radius: 6px; margin-bottom: 8px; border: 1px solid rgba(0,0,0,0.1); }
+    .swatch-box { width: 100%; height: 50px; border-radius: 6px; margin-bottom: 8px; border: 1px solid rgba(0,0,0,0.15); }
 
     pre {
-      background: #1E293B;
+      background: #0F172A;
       color: #38BDF8;
       padding: 18px;
       border-radius: 12px;
@@ -180,12 +181,13 @@
       background: var(--google-blue);
       color: #FFFFFF;
       border: none;
-      padding: 12px 24px;
+      padding: 14px 24px;
       font-size: 0.9rem;
-      font-weight: 500;
+      font-weight: 700;
       border-radius: 24px;
       cursor: pointer;
       width: 100%;
+      text-transform: uppercase;
     }
   </style>
 </head>
@@ -195,22 +197,21 @@
   <header>
     <div>
       <h1>Biometric Visagism Studio</h1>
-      <div class="subtitle">Análisis estructural, tono cutáneo y patrones de laxitud facial</div>
+      <div class="subtitle">Análisis Antropométrico Clínico · Protocolo de Malla 468 Puntos</div>
     </div>
-    <div id="status" style="font-size: 0.85rem; font-weight: 500; color: var(--google-blue);">Listo para escanear</div>
+    <div id="status" style="font-size: 0.85rem; font-weight: 700; color: var(--google-blue);">ESPERANDO MUESTRA</div>
   </header>
 
-  <!-- PROTOCOLO CLÍNICO UNIVERSAL -->
-  <div class="card" style="border-left: 4px solid var(--google-blue);">
-    <h2>Protocolo de Captura Estándar</h2>
+  <div class="card" style="border-left: 5px solid var(--google-blue);">
+    <h2>Protocolo de Estandarización Clínico</h2>
     <div style="font-size: 0.88rem; color: var(--google-text-sub); line-height: 1.6;">
-      • <b>Sello Palatino:</b> Indicar al sujeto que apoye la lengua completa en el paladar duro para estandarizar el área submental.<br>
-      • <b>Expresión Neutra:</b> Rostro relajado, sin sonreír ni forzar la mirada. Cabeza alineada en plano horizontal.
+      • <b>Sello Palatino:</b> Colocar la superficie dorsal de la lengua fija sobre el paladar duro.<br>
+      • <b>Plano Horizontal de Frankfort:</b> Vista neutra alineada, evitando inclinaciones o expresiones gesticulares.
     </div>
   </div>
 
   <div class="card">
-    <h2>Cargar Imagen del Cliente</h2>
+    <h2>Cargar Imagen para Evaluación</h2>
     <input type="file" id="imageInput" accept="image/*" />
   </div>
 
@@ -220,26 +221,26 @@
   </div>
 
   <div class="module-nav" id="moduleNav" style="display:none;">
-    <button class="module-btn active" data-module="mesh">Malla HD 468 Puntos</button>
-    <button class="module-btn" data-module="asimetria">Simetría de la Mirada</button>
-    <button class="module-btn" data-module="laxitud">Laxitud &amp; Vectores de Caída</button>
-    <button class="module-btn" data-module="piel">Colorimetría Multizona</button>
+    <button class="module-btn active" data-module="mesh">Malla HD (468 P)</button>
+    <button class="module-btn" data-module="ojeras">Congestión &amp; Ojeras</button>
+    <button class="module-btn" data-module="cejas">Arcos &amp; Cejas</button>
+    <button class="module-btn" data-module="laxitud">Vectores Caída</button>
+    <button class="module-btn" data-module="piel">Cromatografía</button>
     <button class="module-btn" data-module="guasha">Drenaje Linfático</button>
   </div>
 
-  <!-- DASHBOARD PRINCIPAL EXPLICADO -->
   <div class="card" id="dashboardCard" style="display:none;">
-    <h2>Dashboard Biométrico de Estructura</h2>
+    <h2>Dashboard Antropométrico Estructural</h2>
     <div class="dashboard-grid">
       <div class="metric-card">
-        <div class="metric-title">Forma Facial</div>
+        <div class="metric-title">Morfología Facial</div>
         <div class="metric-value" id="mShape">-</div>
         <div class="metric-desc" id="mShapeDesc">-</div>
       </div>
       <div class="metric-card">
-        <div class="metric-title">Ratio Largo / Ancho</div>
+        <div class="metric-title">Índice Proporcional (Largo/Ancho)</div>
         <div class="metric-value" id="mRatioHW">-</div>
-        <div class="metric-desc">Proporción ideal: 1.30 a 1.45. Define si la estructura necesita volumen lateral o alargamiento óptico.</div>
+        <div class="metric-desc">Rango normativo de referencia: 1.30 - 1.45. Permite determinar la estrategia de volumen lateral o vertical.</div>
       </div>
       <div class="metric-card">
         <div class="metric-title">Proporción de Tercios</div>
@@ -247,40 +248,44 @@
         <div class="metric-desc" id="mThirdsDesc">-</div>
       </div>
       <div class="metric-card">
-        <div class="metric-title">Proporción Mandibular</div>
+        <div class="metric-title">Índice Bigonial (Mandíbula)</div>
         <div class="metric-value" id="mJawRatio">-</div>
         <div class="metric-desc" id="mJawDesc">-</div>
       </div>
     </div>
   </div>
 
-  <!-- SECCIONES DINÁMICAS -->
-  <div id="asimetriaCard" class="card" style="display:none;">
-    <h2>Análisis Biométrico de la Mirada</h2>
-    <div id="asimetriaRec" class="rec-block"></div>
+  <div id="ojerasCard" class="card" style="display:none;">
+    <h2>Análisis de Congestión Infraorbitaria y Ojeras</h2>
+    <div class="swatch-group" id="ojerasSwatches"></div>
+    <div id="ojerasRec" class="rec-block"></div>
+  </div>
+
+  <div id="cejasCard" class="card" style="display:none;">
+    <h2>Análisis Biométrico Supraciliar y Arco de la Ceja</h2>
+    <div id="cejasRec" class="rec-block"></div>
   </div>
 
   <div id="laxitudCard" class="card" style="display:none;">
-    <h2>Análisis de Laxitud &amp; Vectores Gravitacionales</h2>
+    <h2>Análisis de Laxitud y Vectores de Caída Gravitacional</h2>
     <div id="laxitudRec" class="rec-block"></div>
   </div>
 
   <div id="pielCard" class="card" style="display:none;">
-    <h2>Análisis Cromático &amp; Diagnóstico Cutáneo</h2>
+    <h2>Cromatografía Multizona &amp; Guía de Corrección</h2>
     <div class="swatch-group" id="pielSwatches"></div>
     <div id="pielRec" class="rec-block"></div>
   </div>
 
   <div id="guaShaCard" class="card" style="display:none;">
-    <h2>Protocolo Personalizado Gua Sha</h2>
+    <h2>Guía Técnica de Drenaje Linfático Facial</h2>
     <div id="guaShaRec" class="rec-block"></div>
   </div>
 
-  <!-- REGISTRO JSON EXPORTABLE -->
   <div class="card" id="resultsCard" style="display:none;">
-    <h2>Exportación de Datos Biométricos (JSON)</h2>
+    <h2>Registro Técnico Exportable (JSON)</h2>
     <pre id="jsonOutput"></pre>
-    <button id="copyBtn" class="action-btn" style="margin-top:12px;">Copiar JSON</button>
+    <button id="copyBtn" class="action-btn" style="margin-top:12px;">Copiar Registro Técnico</button>
   </div>
 </div>
 
@@ -316,7 +321,7 @@
       canvas.width = photoImg.naturalWidth;
       canvas.height = photoImg.naturalHeight;
       canvasContainer.style.display = 'block';
-      statusEl.innerText = "Procesando malla biométrica...";
+      statusEl.innerText = "ESCANEO EN PROCESO...";
       await faceMesh.send({ image: photoImg });
     };
     photoImg.src = url;
@@ -324,15 +329,14 @@
 
   function onResults(results) {
     if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
-      statusEl.innerText = "Error en detección";
-      alert("No se detectó un rostro válido.");
+      statusEl.innerText = "ERROR EN DETECCIÓN";
+      alert("No se detectó un rostro en la muestra.");
       return;
     }
 
     const lm = results.multiFaceLandmarks[0];
     lastLandmarks = lm;
 
-    // METRICAS FACIALES
     const totalHeight = dist(lm[10], lm[152]);
     const faceWidth = dist(lm[234], lm[454]);
     const jawWidth = dist(lm[58], lm[288]);
@@ -348,46 +352,44 @@
     const midPct = Math.round((middleThird / totalHeight) * 100);
     const lowPct = Math.round((lowerThird / totalHeight) * 100);
 
-    // Asimetría de la mirada
-    const eyeL = px(lm[33]), eyeR = px(lm[263]);
-    const eyeDiff = Math.abs(eyeL.y - eyeR.y).toFixed(1);
+    const browL = px(lm[55]), browR = px(lm[285]);
+    const browDiff = Math.abs(browL.y - browR.y).toFixed(1);
 
     let shape = "Ovalada";
-    let shapeDesc = "Proporciones equilibradas. Admite casi cualquier estilo de visagismo.";
+    let shapeDesc = "Proporciones simétricas. Estructura versátil para diferentes estilos de visagismo.";
     if (ratioHW > 1.45) {
       shape = "Alargada";
-      shapeDesc = "Estructura vertical dominante. Se recomienda añadir volumen lateral.";
+      shapeDesc = "Dominancia vertical. Se beneficia de técnicas que aporten volumen lateral.";
     } else if (jawRatioVal > 85) {
-      shape = "Cuadrada / Angular";
-      shapeDesc = "Ángulos mandibulares marcados. Conviene suavizar contornos con líneas curvas.";
+      shape = "Angular / Estructurada";
+      shapeDesc = "Base mandibular sólida y definida. Aporta una presencia firme y definida.";
     } else if (ratioHW < 1.28) {
       shape = "Redonda";
-      shapeDesc = "Anchura y altura muy parecidas. Se recomienda estilizar visualmente el centro.";
+      shapeDesc = "Proporción equilibrada en ancho y alto. Se aconseja trabajar líneas verticales.";
     }
 
     let jawInterpretation = "";
     if (jawRatioVal > 85) {
-      jawInterpretation = "Mandíbula ancha y estructurada (masculina o de alta definición). Aporta firmeza visual.";
+      jawInterpretation = "Mandíbula ancha e intensa. Alta definición estructural en el tercio inferior.";
     } else if (jawRatioVal >= 72 && jawRatioVal <= 85) {
-      jawInterpretation = "Proporción mandibular ideal (72%-85%). Total equilibrio con los pómulos.";
+      jawInterpretation = "Proporción ideal de la masa mandibular en relación con los arcos cigomáticos.";
     } else {
-      jawInterpretation = "Mandíbula estrecha o estilizada. La cara se afila hacia el mentón.";
+      jawInterpretation = "Estructura mandibular estilizada con convergencia cónica hacia el mentón.";
     }
 
     let thirdDominant = "Equilibrados";
-    if (upPct > midPct && upPct > lowPct) thirdDominant = "Tercio Superior Dominante (Frente amplia)";
-    else if (midPct > upPct && midPct > lowPct) thirdDominant = "Tercio Medio Dominante (Pómulos/Nariz)";
-    else if (lowPct > upPct && lowPct > midPct) thirdDominant = "Tercio Inferior Dominante (Zona Mandibular)";
+    if (upPct > midPct && upPct > lowPct) thirdDominant = "Tercio Superior Dominante";
+    else if (midPct > upPct && midPct > lowPct) thirdDominant = "Tercio Medio Dominante";
+    else if (lowPct > upPct && lowPct > midPct) thirdDominant = "Tercio Inferior Dominante";
 
     computedData = {
       morfologia: { forma: shape, ratioAltoAncho: parseFloat(ratioHW), anchoPx: Math.round(faceWidth), altoPx: Math.round(totalHeight) },
       terciosProporciones: { superior: upPct + "%", medio: midPct + "%", inferior: lowPct + "%", interpretacion: thirdDominant },
       mandibula: { ratioBigonial: jawRatioVal + "%", evaluacion: jawInterpretation },
-      asimetriaMirada: { desnivelOcularPx: parseFloat(eyeDiff) },
+      simetriaSupraciliar: { desnivelCejasPx: parseFloat(browDiff) },
       timestamp: new Date().toISOString()
     };
 
-    // DASHBOARD UPDATE
     document.getElementById('mShape').innerText = shape;
     document.getElementById('mShapeDesc').innerText = shapeDesc;
     document.getElementById('mRatioHW').innerText = ratioHW;
@@ -402,14 +404,15 @@
     document.getElementById('resultsCard').style.display = 'block';
     document.getElementById('moduleNav').style.display = 'flex';
 
-    statusEl.innerText = "Escaneo completado";
+    statusEl.innerText = "PROCESAMIENTO COMPLETO";
     setActiveModule('mesh');
   }
 
   function setActiveModule(mod) {
     document.querySelectorAll('.module-btn').forEach(b => b.classList.toggle('active', b.dataset.module === mod));
 
-    document.getElementById('asimetriaCard').style.display = (mod === 'asimetria') ? 'block' : 'none';
+    document.getElementById('ojerasCard').style.display = (mod === 'ojeras') ? 'block' : 'none';
+    document.getElementById('cejasCard').style.display = (mod === 'cejas') ? 'block' : 'none';
     document.getElementById('laxitudCard').style.display = (mod === 'laxitud') ? 'block' : 'none';
     document.getElementById('pielCard').style.display = (mod === 'piel') ? 'block' : 'none';
     document.getElementById('guaShaCard').style.display = (mod === 'guasha') ? 'block' : 'none';
@@ -417,31 +420,29 @@
     if (!lastLandmarks) return;
 
     if (mod === 'mesh') drawFullDense468Mesh(lastLandmarks);
-    if (mod === 'asimetria') drawAsymmetryModule(lastLandmarks);
+    if (mod === 'ojeras') analyzeUnderEyeCongestion(lastLandmarks);
+    if (mod === 'cejas') drawEyebrowModule(lastLandmarks);
     if (mod === 'laxitud') drawLaxityAndGravityVectors(lastLandmarks);
     if (mod === 'piel') analyzeSkinColors(lastLandmarks);
     if (mod === 'guasha') drawFullGuaShaProtocol(lastLandmarks);
   }
 
-  // 1. DIBUJO ULTRA CLARO DE LOS 468 PUNTOS
   function drawFullDense468Mesh(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Dibuja los 468 puntos bien visibles (blancos con borde azul)
     for (let i = 0; i < lm.length; i++) {
       const p = px(lm[i]);
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 2.8, 0, 2 * Math.PI);
-      ctx.fillStyle = "#FFFFFF";
+      ctx.arc(p.x, p.y, 4.0, 0, 2 * Math.PI);
+      ctx.fillStyle = "#00FFFF";
       ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = "#1A73E8";
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = "#000000";
       ctx.stroke();
     }
 
-    // Líneas conectoras clave
-    ctx.strokeStyle = "#188038";
-    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "#1A73E8";
+    ctx.lineWidth = 5.0;
 
     const drawPath = (indices) => {
       ctx.beginPath();
@@ -455,82 +456,159 @@
 
     drawPath([33, 160, 158, 133, 153, 144]);
     drawPath([362, 385, 387, 263, 373, 380]);
+    drawPath([70, 63, 105, 66, 107]);
+    drawPath([300, 293, 334, 296, 336]);
     drawPath([61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146]);
   }
 
-  // 2. MÓDULO DE ASIMETRÍA
-  function drawAsymmetryModule(lm) {
+  // MÓDULO EXCLUSIVO DE CONGESTIÓN INFRAORBITARIA Y OJERAS
+  function analyzeUnderEyeCongestion(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const eyeL = px(lm[33]), eyeR = px(lm[263]);
-    const browL = px(lm[55]), browR = px(lm[285]);
+    const sampleCanvas = document.createElement('canvas');
+    sampleCanvas.width = photoImg.naturalWidth;
+    sampleCanvas.height = photoImg.naturalHeight;
+    const sCtx = sampleCanvas.getContext('2d');
+    sCtx.drawImage(photoImg, 0, 0);
 
-    ctx.lineWidth = 3.5;
-    ctx.strokeStyle = "#D93025";
+    const getRGB = (point) => {
+      const p = px(point);
+      const data = sCtx.getImageData(Math.round(p.x), Math.round(p.y), 1, 1).data;
+      return { r: data[0], g: data[1], b: data[2], hex: `#${((1 << 24) + (data[0] << 16) + (data[1] << 8) + data[2]).toString(16).slice(1)}` };
+    };
 
-    ctx.beginPath(); ctx.moveTo(eyeL.x - 40, eyeL.y); ctx.lineTo(eyeR.x + 40, eyeR.y); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(browL.x - 40, browL.y); ctx.lineTo(browR.x + 40, browR.y); ctx.stroke();
+    // Puntos anatómicos específicos de la cuenca infraorbitaria (antes del pómulo)
+    const leftUnderEye = getRGB(lm[124]);  // Surco infraorbitario Izq
+    const rightUnderEye = getRGB(lm[353]); // Surco infraorbitario Der
+    const foreheadSkin = getRGB(lm[10]);   // Piel base de referencia
 
-    const eyeDiff = computedData.asimetriaMirada.desnivelOcularPx;
+    // Dibujar marcadores térmicos/clínicos de ojera
+    const drawEyeMarker = (point, label) => {
+      const p = px(point);
+      ctx.strokeStyle = "#D93025";
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 24, 0, 2 * Math.PI);
+      ctx.stroke();
 
-    let evalText = "";
-    if (eyeDiff < 4.0) {
-      evalText = "<b>Simetría Ocular Alta:</b> La inclinación entre ambos ojos es casi imperceptible (<4px). Indica un equilibrio muscular muy estable.";
-    } else if (eyeDiff >= 4.0 && eyeDiff <= 8.0) {
-      evalText = "<b>Asimetría Fisiológica Normal:</b> Existe una ligera diferencia de nivel (4-8px), totalmente natural por la dominancia visual o masticatoria.";
-    } else {
-      evalText = "<b>Asimetría Marcada:</b> Hay un desnivel claro (>8px). Se recomienda revisar si se debe a tensión muscular unilateral o posturas al dormir.";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 16px Roboto Mono";
+      ctx.fillText(label, p.x - 45, p.y + 40);
+    };
+
+    drawEyeMarker(lm[124], "Infra-L");
+    drawEyeMarker(lm[353], "Infra-R");
+
+    // Cálculo de congestión (Diferencia de luminancia y tinte azul/rojo)
+    const avgEyeLum = ((leftUnderEye.r + leftUnderEye.g + leftUnderEye.b) + (rightUnderEye.r + rightUnderEye.g + rightUnderEye.b)) / 6;
+    const foreheadLum = (foreheadSkin.r + foreheadSkin.g + foreheadSkin.b) / 3;
+    const darknessDiff = Math.round(foreheadLum - avgEyeLum);
+
+    let congestionType = "Baja / Normal";
+    let actionAdvice = "La zona infraorbitaria no presenta diferencias críticas de congestión respecto al tono base facial.";
+
+    if (darknessDiff > 12) {
+      if ((leftUnderEye.b > leftUnderEye.r) || (rightUnderEye.b > rightUnderEye.r)) {
+        congestionType = "Congestión Vascular Alta (Tono Azul / Violáceo)";
+        actionAdvice = "<b>Diagnóstico:</b> Alta retención de líquidos / estancamiento microcirculatorio en el plexo venoso suborbitario.<br><b>Protocolo Sugerido:</b> Compresas frías, crio-masaje con herramientas metálicas y drenaje linfático desde el canto interno hacia el ganglio parotídeo.";
+      } else {
+        congestionType = "Hiperpigmentación Melánica / Sombra Estructural";
+        actionAdvice = "<b>Diagnóstico:</b> Acumulación de melina local o hundimiento del surco nasoyugal.<br><b>Protocolo Sugerido:</b> Corrección de tono mediante neutralizadores melocotón/salmón antes de la base y técnicas de relleno lumínico mediante visagismo.";
+      }
     }
 
-    document.getElementById('asimetriaRec').innerHTML = `
-      <h3>Diagnóstico de Alineación de Ojos y Cejas</h3>
-      <p><b>Diferencia de altura en ojos:</b> ${eyeDiff} px</p>
-      <p>${evalText}</p>
-      <p><b>Consejo práctico:</b> Si vas a corregir con visagismo (maquillaje, cejas o peinado), compensa el lado más bajo elevando ligeramente el arco de la ceja de ese lado.</p>
+    document.getElementById('ojerasSwatches').innerHTML = `
+      <div class="swatch-item">
+        <div class="swatch-box" style="background:${leftUnderEye.hex};"></div>
+        <b>Ojera Izquierda</b>
+        <div style="font-family:'Roboto Mono', monospace; color:var(--google-text-sub);">${leftUnderEye.hex}</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch-box" style="background:${rightUnderEye.hex};"></div>
+        <b>Ojera Derecha</b>
+        <div style="font-family:'Roboto Mono', monospace; color:var(--google-text-sub);">${rightUnderEye.hex}</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch-box" style="background:${foreheadSkin.hex};"></div>
+        <b>Ref. Frente</b>
+        <div style="font-family:'Roboto Mono', monospace; color:var(--google-text-sub);">${foreheadSkin.hex}</div>
+      </div>
+    `;
+
+    document.getElementById('ojerasRec').innerHTML = `
+      <h3>Evaluación Cromática Infraorbitaria</h3>
+      <p><b>Nivel de Congestión Detectado:</b> <span style="color:var(--google-red); font-weight:700;">${congestionType}</span></p>
+      <p><b>Delta de Oscurecimiento:</b> ${darknessDiff} puntos respecto a la frente.</p>
+      <p style="margin-top:10px;">${actionAdvice}</p>
+    `;
+
+    computedData.congestiónOjeras = {
+      tipoCongestion: congestionType,
+      deltaOscurecimiento: darknessDiff,
+      hexIzq: leftUnderEye.hex,
+      hexDer: rightUnderEye.hex
+    };
+    document.getElementById('jsonOutput').innerText = JSON.stringify(computedData, null, 2);
+  }
+
+  function drawEyebrowModule(lm) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const browL = px(lm[55]), browR = px(lm[285]);
+    const archL = px(lm[70]), archR = px(lm[300]);
+
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "#D93025";
+
+    ctx.beginPath(); ctx.moveTo(browL.x - 50, browL.y); ctx.lineTo(browR.x + 50, browR.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(archL.x - 50, archL.y); ctx.lineTo(archR.x + 50, archR.y); ctx.stroke();
+
+    const browDiff = computedData.simetriaSupraciliar.desnivelCejasPx;
+
+    document.getElementById('cejasRec').innerHTML = `
+      <h3>Evaluación de Cejas y Arcos Supraciliares</h3>
+      <p><b>Desnivel entre arcos:</b> ${browDiff} px</p>
+      <p><b>Guía Estética:</b> Si el desnivel supera los 5px, se recomienda corregir el punto de elevación del arco en la ceja descendente mediante diseño o micropigmentación para equilibrar la expresión facial.</p>
     `;
   }
 
-  // 3. LAXITUD Y CAÍDA REALISTA (VECTORES HACIA ABAJO)
   function drawLaxityAndGravityVectors(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const drawVectorDown = (pFrom, length) => {
       const f = px(pFrom);
       ctx.strokeStyle = "#D93025";
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 5;
       ctx.beginPath();
       ctx.moveTo(f.x, f.y);
       ctx.lineTo(f.x, f.y + length);
       ctx.stroke();
 
-      // Flecha hacia abajo
       ctx.beginPath();
-      ctx.moveTo(f.x - 5, f.y + length - 6);
+      ctx.moveTo(f.x - 8, f.y + length - 8);
       ctx.lineTo(f.x, f.y + length);
-      ctx.lineTo(f.x + 5, f.y + length - 6);
+      ctx.lineTo(f.x + 8, f.y + length - 8);
       ctx.fillStyle = "#D93025";
       ctx.fill();
     };
 
-    // Puntos sensibles al descolgamiento por gravedad
-    drawVectorDown(lm[205], 25); // Nasogeniano Izq
-    drawVectorDown(lm[425], 25); // Nasogeniano Der
-    drawVectorDown(lm[152], 30); // Mentón / Papada
-    drawVectorDown(lm[58], 25);  // Ángulo Mandibular Izq
-    drawVectorDown(lm[288], 25); // Ángulo Mandibular Der
+    drawVectorDown(lm[205], 35);
+    drawVectorDown(lm[425], 35);
+    drawVectorDown(lm[152], 40);
+    drawVectorDown(lm[58], 35);
+    drawVectorDown(lm[288], 35);
 
     document.getElementById('laxitudRec').innerHTML = `
-      <h3>Evaluación de Caída Gravitacional y Flacidez</h3>
-      <p>Las flechas rojas marcan los puntos donde el rostro tiende a ceder por la gravedad con los años:</p>
+      <h3>Vectores Gravitacionales y Zonas de Flacidez</h3>
+      <p>Marcadores de caída tisular en el tercio medio e inferior:</p>
       <ul>
-        <li><b>Surcos Nasogenianos:</b> Pérdida de soporte en la grasa del pómulo.</li>
-        <li><b>Línea Mandibular y Mentón:</b> Pérdida de firmeza por postura o pérdida de tono en el músculo platisma.</li>
+        <li><b>Surcos Nasogenianos:</b> Pérdida de soporte estructural en el compartimento graso del pómulo.</li>
+        <li><b>Línea del Óvalo Facial:</b> Tendencia a la pérdida de definición sobre el reborde mandibular.</li>
       </ul>
-      <p><b>Acción Recomendada:</b> Trabajar masajes de remodelación ascendentes (efecto lifting) para contrarrestar estas líneas rojas de caída.</p>
+      <p><b>Protocolo de Trabajo:</b> Aplicar masajes de tracción ascendente y firmeza tisular para neutralizar la fuerza gravitacional.</p>
     `;
   }
 
-  // 4. COLORIMETRÍA MULTIZONA REAL (FRENTE, PÓMULOS Y MENTÓN) CON DIAGNÓSTICO
   function analyzeSkinColors(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -547,7 +625,7 @@
     };
 
     const zones = [
-      { name: "Centro de la Frente", point: lm[10], color: getRGB(lm[10]) },
+      { name: "Centro Frente", point: lm[10], color: getRGB(lm[10]) },
       { name: "Pómulo Izquierdo", point: lm[117], color: getRGB(lm[117]) },
       { name: "Pómulo Derecho", point: lm[346], color: getRGB(lm[346]) },
       { name: "Mentón", point: lm[152], color: getRGB(lm[152]) }
@@ -557,9 +635,9 @@
     zones.forEach(z => {
       const p = px(z.point);
       ctx.strokeStyle = "#188038";
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 5;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 18, 0, 2 * Math.PI);
+      ctx.arc(p.x, p.y, 22, 0, 2 * Math.PI);
       ctx.stroke();
 
       swatchesHTML += `
@@ -571,36 +649,18 @@
       `;
     });
 
-    // Comparación simple de variaciones de color entre zonas
-    const rDiff = Math.abs(zones[1].color.r - zones[2].color.r);
-    const foreheadChinDiff = Math.abs(zones[0].color.r - zones[3].color.r);
-
-    let skinDiag = "";
-    if (rDiff > 15) {
-      skinDiag += "• <b>Desigualdad entre Pómulos:</b> Hay una diferencia notable de tono entre el pómulo izquierdo y el derecho (posible rojez localizada o exposición solar descompensada al conducir).<br>";
-    } else {
-      skinDiag += "• <b>Tono de Mejillas Uniforme:</b> Pigmentación muy homogénea entre ambos lados del rostro.<br>";
-    }
-
-    if (foreheadChinDiff > 20) {
-      skinDiag += "• <b>Variación Frente-Mentón:</b> La frente presenta un tono distinto al mentón, muy habitual por brillo en zona T o sombra submental.";
-    } else {
-      skinDiag += "• <b>Piel Equilibrada:</b> Tono constante en la zona central del rostro.";
-    }
-
     document.getElementById('pielSwatches').innerHTML = swatchesHTML;
     document.getElementById('pielRec').innerHTML = `
-      <h3>Diagnóstico de Tono &amp; Problemas Detectados</h3>
-      <p>${skinDiag}</p>
-      <p><b>Consejos de corrección:</b> Usar base o corrector para unificar zonas con rojeces o sombras antes de cualquier trabajo de imagen o fotografía.</p>
+      <h3>Cromatografía Cutánea y Protocolo de Corrección</h3>
+      <p><b>Diagnóstico de Muestreo:</b> La lectura multizona registra variaciones tonales naturales causadas por diferencias de microcirculación, sombras anatómicas o fotodaño localizado.</p>
+      <p><b>Recomendación de Aplicación:</b> Unificar mediante corrección cromática en las zonas de mayor desviación antes de realizar cualquier tratamiento estético o fotográfico.</p>
     `;
   }
 
-  // 5. GUA SHA COMPLETO (SABEN HACIA DÓNDE IR LAS MANOS)
   function drawFullGuaShaProtocol(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#188038";
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 6;
 
     const drawUpArrow = (pFrom, pTo) => {
       const f = px(pFrom), t = px(pTo);
@@ -610,20 +670,19 @@
       ctx.stroke();
     };
 
-    // Toda la cara: desde el centro hacia las orejas y hacia arriba
-    drawUpArrow(lm[152], lm[234]); // Cuello/Mentón a oreja Izq
-    drawUpArrow(lm[152], lm[454]); // Cuello/Mentón a oreja Der
-    drawUpArrow(lm[61], lm[127]);   // Mejilla a sien Izq
-    drawUpArrow(lm[291], lm[356]);  // Mejilla a sien Der
-    drawUpArrow(lm[9], lm[10]);     // Entrecejo hacia arriba (Frente)
+    drawUpArrow(lm[152], lm[234]);
+    drawUpArrow(lm[152], lm[454]);
+    drawUpArrow(lm[61], lm[127]);
+    drawUpArrow(lm[291], lm[356]);
+    drawUpArrow(lm[9], lm[10]);
 
     document.getElementById('guaShaRec').innerHTML = `
-      <h3>Ruta Completa de Masaje Facial Gua Sha</h3>
-      <p>Las líneas verdes indican la dirección <b>correcta</b> del masaje (siempre hacia afuera y hacia arriba para drenar toxinas hacia las orejas y el cuello):</p>
+      <h3>Ruta Técnica de Drenaje Linfático Facial</h3>
+      <p>Direcciones de drenaje para la eliminación de toxinas y activación microcirculatoria:</p>
       <ol>
-        <li><b>Línea Mandibular:</b> Desliza desde el mentón hasta el lóbulo de la oreja.</li>
-        <li><b>Pómulos:</b> Desde la comisura de la boca hacia la sien.</li>
-        <li><b>Frente:</b> Desde las cejas hacia el nacimiento del pelo.</li>
+        <li><b>Reborde Mandibular:</b> Desplazamiento desde el mentón hacia los ganglios retroauriculares.</li>
+        <li><b>Zona Cigomática:</b> Movimiento desde la comisura labial hacia la sien.</li>
+        <li><b>Región Frontal:</b> Tracción ascendente desde las cejas hacia la línea de inserción del cabello.</li>
       </ol>
     `;
   }
@@ -634,7 +693,7 @@
 
   document.getElementById('copyBtn').addEventListener('click', () => {
     navigator.clipboard.writeText(JSON.stringify(computedData, null, 2));
-    alert("Datos biométricos copiados al portapapeles.");
+    alert("Registro copiado con éxito.");
   });
 </script>
 </body>

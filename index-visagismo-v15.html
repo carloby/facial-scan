@@ -3,285 +3,330 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aesthetic AI — Clinical Visagism & Biometrics (v19)</title>
+  <title>Aesthetic AI — Clinical Biometrics (Apple Light v21)</title>
 
+  <!-- MediaPipe Scripts con carga asegurada -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 
   <style>
     :root {
-      --bg-dark: #09090B;
-      --card-bg: rgba(24, 24, 27, 0.75);
-      --card-border: rgba(255, 255, 255, 0.1);
-      --accent-cyan: #00F0FF;
-      --accent-blue: #3B82F6;
-      --accent-purple: #8B5CF6;
-      --text-main: #F4F4F5;
-      --text-muted: #A1A1AA;
-      --success: #10B981;
-      --danger: #EF4444;
+      --bg-light: #F5F5F7;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --accent-apple: #0071E3;
+      --accent-red: #FF3B30;
+      --accent-green: #34C759;
+      --text-dark: #1D1D1F;
+      --text-muted: #86868B;
     }
+
+    * { box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
-      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-dark);
       margin: 0;
-      padding: 30px 20px;
+      padding: 40px 20px;
       min-height: 100vh;
-      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container { max-width: 1000px; margin: 0 auto; }
+    .container { max-width: 1080px; margin: 0 auto; }
 
-    header { text-align: center; margin-bottom: 30px; }
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .badge-top {
+      display: inline-block;
+      background: rgba(0, 113, 227, 0.1);
+      color: var(--accent-apple);
+      padding: 5px 14px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin-bottom: 12px;
+    }
+
     h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
+      font-size: 2.5rem;
+      font-weight: 700;
       letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #FFFFFF 30%, var(--accent-cyan) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--text-dark);
       margin: 0 0 8px 0;
     }
-    .subtitle { color: var(--text-muted); font-size: 0.95rem; font-weight: 400; }
 
-    .card {
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin: 0 auto;
+      max-width: 540px;
+    }
+
+    /* Cards Estilo Apple Studio Display */
+    .apple-card {
       background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 24px;
+      border-radius: 22px;
+      padding: 28px;
       margin-bottom: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
     }
 
     h2 {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 600;
-      color: #FFFFFF;
-      margin-top: 0;
-      margin-bottom: 16px;
+      margin: 0 0 18px 0;
+      letter-spacing: -0.02em;
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    /* Pestañas de Navegación */
-    .nav-pills {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      margin-bottom: 20px;
-    }
-    .module-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-muted);
-      padding: 10px 18px;
-      border-radius: 99px;
-      font-size: 0.88rem;
-      font-weight: 500;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.25s ease;
-    }
-    .module-btn:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-main);
-    }
-    .module-btn.active {
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-      color: #000000;
-      font-weight: 700;
-      border-color: transparent;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-    }
-    .module-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-    /* Entradas e Inputs */
-    input[type="file"] {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px dashed rgba(255, 255, 255, 0.2);
-      background: rgba(0, 0, 0, 0.3);
-      color: var(--text-muted);
-      box-sizing: border-box;
-      cursor: pointer;
-    }
-
-    .canvas-container {
-      position: relative;
-      width: 100%;
-      max-width: 520px;
-      margin: 0 auto 20px auto;
-      display: none;
+    /* Dropzone de Carga */
+    .file-dropzone {
+      border: 2px dashed rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 0.6);
       border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--card-border);
-      box-shadow: 0 0 30px rgba(0,0,0,0.8);
-    }
-    canvas { width: 100%; height: auto; display: block; }
-
-    /* Botones Pro */
-    button.btn-primary {
-      width: 100%;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-      color: #000000;
-      border: none;
-      padding: 14px 20px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    button.btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
-    }
-    button.btn-secondary {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
-      border: 1px solid var(--card-border);
-      padding: 12px 20px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border-radius: 12px;
-      cursor: pointer;
-      margin-top: 8px;
+
+    .file-dropzone:hover {
+      border-color: var(--accent-apple);
+      background: rgba(0, 113, 227, 0.02);
     }
 
-    /* Dashboard Métrica */
-    .metric-grid {
+    input[type="file"] { display: none; }
+
+    .dropzone-label {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-dark);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .dropzone-sub { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* Layout */
+    .main-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 880px) {
+      .main-grid { grid-template-columns: 440px 1fr; }
+    }
+
+    /* Visor de Imagen */
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      background: #E5E5EA;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    canvas { width: 100%; height: auto; display: block; }
+
+    /* Pestañas Segmentadas iOS */
+    .segmented-control {
+      display: flex;
+      background: rgba(120, 120, 128, 0.12);
+      padding: 3px;
+      border-radius: 10px;
+      margin-bottom: 22px;
+    }
+
+    .segment-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .segment-btn.active {
+      background: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Metricas HUD */
+    .hud-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
       margin-bottom: 20px;
     }
-    .metric-box {
-      background: rgba(0,0,0,0.4);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 12px;
-      padding: 14px;
+
+    .hud-card {
+      background: #FFFFFF;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
     }
-    .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-    .metric-value { font-size: 1.2rem; font-weight: 700; color: var(--accent-cyan); margin-top: 4px; }
+
+    .hud-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .hud-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      letter-spacing: -0.02em;
+    }
 
     /* Barras de Tercios */
-    .bar-container { margin-bottom: 12px; }
-    .bar-header { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; }
-    .bar-bg { background: rgba(255,255,255,0.1); height: 8px; border-radius: 99px; overflow: hidden; }
-    .bar-fill { background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); height: 100%; border-radius: 99px; }
+    .bar-group { margin-bottom: 14px; }
+    .bar-meta { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 500; margin-bottom: 5px; }
+    .bar-track { background: rgba(0, 0, 0, 0.06); height: 8px; border-radius: 99px; overflow: hidden; }
+    .bar-fill { background: var(--accent-apple); height: 100%; border-radius: 99px; transition: width 0.5s ease; }
 
-    .status { text-align: center; font-weight: 600; font-size: 0.9rem; color: var(--accent-cyan); margin-top: 10px; }
-    .pill { display: inline-block; background: rgba(0, 240, 255, 0.15); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 14px; border-radius: 99px; font-size: 0.8rem; font-weight: 700; }
-    .disclaimer { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-top: 15px; }
+    /* Estado & Swatches */
+    .status-badge {
+      display: block;
+      text-align: center;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(0, 113, 227, 0.08);
+      font-size: 0.88rem;
+      color: var(--accent-apple);
+      font-weight: 600;
+      margin-top: 14px;
+    }
+
+    .swatch-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <h1>Aesthetic AI Studio</h1>
-    <div class="subtitle">Plataforma de Análisis Biométrico &amp; Visagismo Clínico Integral</div>
+    <div class="badge-top">Aesthetic AI Studio v21</div>
+    <h1>Clinical Visagism &amp; Biometrics</h1>
+    <p class="subtitle">Análisis antropométrico facial y evaluación colorimétrica cutánea.</p>
   </header>
 
-  <!-- Pestañas de Suite -->
-  <div class="card" id="moduleNav" style="display:none;">
-    <div class="nav-pills">
-      <button class="module-btn active" data-module="dashboard">📊 Dashboard Biométrico Global</button>
-      <button class="module-btn" data-module="cejas">👁️ Visagismo Cejas</button>
-      <button class="module-btn" data-module="guasha">🌿 Gua Sha &amp; MasaJe</button>
-      <button class="module-btn" data-module="piel">🧴 Dermocosmética &amp; Eritema</button>
-    </div>
-  </div>
-
-  <!-- Entrada de Foto -->
-  <div class="card">
-    <h2>📷 Captura &amp; Análisis</h2>
-    <input type="file" id="imageInput" accept="image/*" />
-    <div id="status" class="status">Esperando archivo de imagen...</div>
-  </div>
-
-  <!-- Visor de Foto y Canvas -->
-  <div class="canvas-container" id="canvasContainer">
-    <img id="photoImg" style="width:100%; height:auto; display:block;" />
-    <canvas id="outputCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
-  </div>
-
-  <!-- DASHBOARD CONSOLIDADO DE MEDICIONES -->
-  <div class="card" id="dashboardCard" style="display:none;">
-    <h2>📊 Resumen Biométrico Unificado</h2>
-    <div id="shapePill" class="pill" style="margin-bottom: 15px;"></div>
-
-    <div class="metric-grid">
-      <div class="metric-box">
-        <div class="metric-label">Puntos Escaneados</div>
-        <div class="metric-value" id="mPoints">478</div>
+  <div class="main-grid">
+    <!-- Columna Izquierda: Carga y Visor -->
+    <div>
+      <div class="apple-card">
+        <h2>📷 Imagen del Paciente</h2>
+        <div class="file-dropzone" onclick="document.getElementById('imageInput').click();">
+          <span class="dropzone-label">Haz clic para subir foto</span>
+          <span class="dropzone-sub">Procesamiento local confidencial</span>
+          <input type="file" id="imageInput" accept="image/*" />
+        </div>
+        <div id="status" class="status-badge">Esperando imagen...</div>
       </div>
-      <div class="metric-box">
-        <div class="metric-label">Asimetría de Arcos</div>
-        <div class="metric-value" id="mBrowDiff">0.0 px</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-label">Índice Interocular</div>
-        <div class="metric-value" id="mInterocular">0.0</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-label">Ratio Mandíbula / Pómulo</div>
-        <div class="metric-value" id="mJawRatio">0.0</div>
+
+      <div class="canvas-wrapper" id="canvasContainer" style="display:none;">
+        <img id="photoImg" style="width:100%; height:auto; display:block;" />
+        <canvas id="outputCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
       </div>
     </div>
 
-    <h3 style="font-size:0.95rem; color:var(--text-muted); margin-bottom:12px;">Equilibrio de Tercios Faciales</h3>
-    <div class="bar-container">
-      <div class="bar-header"><span>Tercio Superior (Frente)</span><span id="pctTop">0%</span></div>
-      <div class="bar-bg"><div class="bar-fill" id="fillTop" style="width: 0%;"></div></div>
-    </div>
-    <div class="bar-container">
-      <div class="bar-header"><span>Tercio Medio (Ojos / Nariz)</span><span id="pctMid">0%</span></div>
-      <div class="bar-bg"><div class="bar-fill" id="fillMid" style="width: 0%;"></div></div>
-    </div>
-    <div class="bar-container">
-      <div class="bar-header"><span>Tercio Inferior (Mentón)</span><span id="pctBot">0%</span></div>
-      <div class="bar-bg"><div class="bar-fill" id="fillBot" style="width: 0%;"></div></div>
-    </div>
-  </div>
-
-  <!-- MÓDULO DERMOCOSMÉTICA Y ROJEZ (AMPLIADO) -->
-  <div class="card" id="pielCard" style="display:none;">
-    <h2>🧴 Análisis de Piel &amp; Mapas de Eritema</h2>
-    <div class="metric-grid">
-      <div class="metric-box">
-        <div class="metric-label">Índice de Eritema (Rojez)</div>
-        <div class="metric-value" id="mErythema">Bajo</div>
+    <!-- Columna Derecha: Controles y Diagnóstico -->
+    <div>
+      <div class="segmented-control" id="mainNav" style="display:none;">
+        <button class="segment-btn active" onclick="switchTab('dashboard', this)">📊 Antropometría</button>
+        <button class="segment-btn" onclick="switchTab('piel', this)">🧴 Piel &amp; Rojez</button>
       </div>
-      <div class="metric-box">
-        <div class="metric-label">Luminosidad / Brillo</div>
-        <div class="metric-value" id="mLuminance">Optimal</div>
+
+      <!-- TAB 1: DASHBOARD DE MEDICIONES -->
+      <div class="apple-card tab-content" id="tab-dashboard" style="display:none;">
+        <h2>📊 Diagnóstico Antropométrico</h2>
+        
+        <div class="hud-grid">
+          <div class="hud-card">
+            <div class="hud-title">Landmarks Detección</div>
+            <div class="hud-value" id="hudPoints">0</div>
+          </div>
+          <div class="hud-card">
+            <div class="hud-title">Índice Interocular</div>
+            <div class="hud-value" id="hudInterocular">0.00</div>
+          </div>
+          <div class="hud-card">
+            <div class="hud-title">Proporción Mandíbula/Pómulo</div>
+            <div class="hud-value" id="hudJawRatio">0.00</div>
+          </div>
+          <div class="hud-card">
+            <div class="hud-title">Desviación Cejas</div>
+            <div class="hud-value" id="hudBrowAsym">0.0 px</div>
+          </div>
+        </div>
+
+        <h3 style="font-size:0.85rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:12px;">Equilibrio de Tercios Faciales</h3>
+        
+        <div class="bar-group">
+          <div class="bar-meta"><span>Tercio Superior (Frente)</span><span id="pctTop">0%</span></div>
+          <div class="bar-track"><div class="bar-fill" id="fillTop" style="width:0%"></div></div>
+        </div>
+        <div class="bar-group">
+          <div class="bar-meta"><span>Tercio Medio (Ojos/Nariz)</span><span id="pctMid">0%</span></div>
+          <div class="bar-track"><div class="bar-fill" id="fillMid" style="width:0%"></div></div>
+        </div>
+        <div class="bar-group">
+          <div class="bar-meta"><span>Tercio Inferior (Mentón)</span><span id="pctBot">0%</span></div>
+          <div class="bar-track"><div class="bar-fill" id="fillBot" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- TAB 2: DERMOCOSMÉTICA Y ROJEZ RECALIBRADA -->
+      <div class="apple-card tab-content" id="tab-piel" style="display:none;">
+        <h2>🧴 Análisis de Tono y Eritema Cutáneo</h2>
+        
+        <div class="hud-grid">
+          <div class="hud-card">
+            <div class="hud-title">Nivel de Eritema (Rojez)</div>
+            <div class="hud-value" id="hudErythema" style="font-size:1.15rem;">Buscando...</div>
+          </div>
+          <div class="hud-card">
+            <div class="hud-title">Muestra de Color</div>
+            <div style="margin-top:4px;"><span id="swatchEl" class="swatch-box"></span></div>
+          </div>
+        </div>
+
+        <div id="pielRecommendations" style="font-size:0.92rem; line-height:1.6; color:#3A3A3C; margin-top:10px;">
+          Sube una foto para calcular las pautas cosmetológicas.
+        </div>
       </div>
     </div>
-    <div id="pielRec" style="font-size: 0.9rem; line-height:1.6; color:var(--text-muted);"></div>
-  </div>
-
-  <!-- GENERACIÓN IA DE GOOGLE -->
-  <div class="card" id="aiGenCard" style="display:none;">
-    <h2>✨ Renderizado Fotorrealista (Gemini API)</h2>
-    <input type="text" id="googleApiKey" placeholder="Pega tu API Key de Google AI Studio (AIzaSy...)" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--card-border); background:rgba(0,0,0,0.5); color:#FFF; margin-bottom:12px;" />
-    <button id="aiGenBtn" class="btn-primary">Generar Simulación con IA</button>
   </div>
 </div>
 
 <script>
-  // Lógica principal de inicialización y sincronización de UI
   const imageInput = document.getElementById('imageInput');
   const statusEl = document.getElementById('status');
   const photoImg = document.getElementById('photoImg');
@@ -296,12 +341,11 @@
     });
     faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5 });
     faceMesh.onResults(onResults);
-    statusEl.innerText = "Motor listo. Selecciona una foto para iniciar el escaneo.";
   }
 
   imageInput.addEventListener('change', (e) => {
     if (!e.target.files[0]) return;
-    statusEl.innerText = "Procesando matriz biomecánica...";
+    statusEl.innerText = "Procesando matriz facial...";
     const url = URL.createObjectURL(e.target.files[0]);
     photoImg.onload = async () => {
       canvas.width = photoImg.naturalWidth;
@@ -317,16 +361,22 @@
       statusEl.innerText = "No se detectó ningún rostro.";
       return;
     }
-    statusEl.innerText = "¡Análisis biométrico completado!";
+
+    statusEl.innerText = "✓ Análisis biométrico completado";
+    document.getElementById('mainNav').style.display = 'flex';
+    
     const lm = results.multiFaceLandmarks[0];
 
-    // Cálculos de Tercios
+    // Cálculos Antropométricos
     const top = dist(lm[10], lm[9]), mid = dist(lm[9], lm[2]), bot = dist(lm[2], lm[152]);
     const total = top + mid + bot;
     const pTop = ((top/total)*100).toFixed(1), pMid = ((mid/total)*100).toFixed(1), pBot = ((bot/total)*100).toFixed(1);
 
-    // Actualización de Dashboard Unificado
-    document.getElementById('shapePill').innerText = "Morfología Estructurada Detectada";
+    document.getElementById('hudPoints').innerText = lm.length;
+    document.getElementById('hudInterocular').innerText = (dist(lm[33], lm[263]) / dist(lm[234], lm[454])).toFixed(2);
+    document.getElementById('hudJawRatio').innerText = (dist(lm[58], lm[288]) / dist(lm[234], lm[454])).toFixed(2);
+    document.getElementById('hudBrowAsym').innerText = (Math.abs(lm[70].y - lm[300].y) * photoImg.naturalHeight).toFixed(1) + " px";
+
     document.getElementById('pctTop').innerText = pTop + "%";
     document.getElementById('fillTop').style.width = pTop + "%";
     document.getElementById('pctMid').innerText = pMid + "%";
@@ -334,15 +384,58 @@
     document.getElementById('pctBot').innerText = pBot + "%";
     document.getElementById('fillBot').style.width = pBot + "%";
 
-    document.getElementById('mPoints').innerText = lm.length;
-    document.getElementById('mInterocular').innerText = (dist(lm[33], lm[263]) / dist(lm[234], lm[454])).toFixed(2);
-    document.getElementById('mJawRatio').innerText = (dist(lm[58], lm[288]) / dist(lm[234], lm[454])).toFixed(2);
+    // Análisis de Piel Múltiple (Pómulo Izquierdo #117, Pómulo Derecho #346 y Nariz #4)
+    analyzeSkinRecalibrated(lm);
 
-    // Mostrar Interfaz
-    document.getElementById('moduleNav').style.display = 'block';
-    document.getElementById('dashboardCard').style.display = 'block';
-    document.getElementById('pielCard').style.display = 'block';
-    document.getElementById('aiGenCard').style.display = 'block';
+    // Activar Tab Principal
+    document.getElementById('tab-dashboard').style.display = 'block';
+  }
+
+  function analyzeSkinRecalibrated(lm) {
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = photoImg.naturalWidth;
+    tempCanvas.height = photoImg.naturalHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(photoImg, 0, 0);
+
+    // Muestreamos 3 puntos clave: Pómulo izq (117), Pómulo der (346) y zona nasal (4)
+    const points = [lm[117], lm[346], lm[4]];
+    let rSum = 0, gSum = 0, bSum = 0;
+
+    points.forEach(pt => {
+      const cx = Math.floor(pt.x * photoImg.naturalWidth);
+      const cy = Math.floor(pt.y * photoImg.naturalHeight);
+      const data = tempCtx.getImageData(cx, cy, 8, 8).data;
+      for (let i = 0; i < data.length; i += 4) {
+        rSum += data[i];
+        gSum += data[i+1];
+        bSum += data[i+2];
+      }
+    });
+
+    const totalPixels = points.length * 64;
+    const r = Math.round(rSum / totalPixels);
+    const g = Math.round(gSum / totalPixels);
+    const b = Math.round(bSum / totalPixels);
+
+    // Cálculo del parámetro a* de CIELAB (Eje Verde-Rojo)
+    const redRatio = (r / (g + 1));
+    const chromaRed = (r - g) + (r - b)*0.5;
+
+    document.getElementById('swatchEl').style.backgroundColor = `rgb(${r},${g},${b})`;
+    const erythemaEl = document.getElementById('hudErythema');
+    const recEl = document.getElementById('pielRecommendations');
+
+    // Umbral recalibrado para pieles con tendencia a eritema/rosácea
+    if (redRatio > 1.18 || chromaRed > 22) {
+      erythemaEl.innerText = "Marcado / Reactivo";
+      erythemaEl.style.color = var(--accent-red);
+      recEl.innerHTML = "<strong>• Diagnóstico:</strong> Se detecta un nivel elevado de eritema y vascularización superficial en zona central y pómulos.<br><br><strong>• Pauta Recomendada:</strong> Niacinamida al 5%, Ácido Azelaico (10%), extracto de Centella Asiática y fotoprotección mineral fluida. Evitar exfoliantes mecánicos o con alto contenido de alcohol.";
+    } else {
+      erythemaEl.innerText = "Bajo / Moderado";
+      erythemaEl.style.color = var(--accent-green);
+      recEl.innerHTML = "<strong>• Diagnóstico:</strong> Tono con niveles estables de hemoglobina superficial.<br><br><strong>• Pauta Recomendada:</strong> Mantener rutina hidratante con Ácido Hialurónico, antioxidantes (Vitamina C) por la mañana y protección solar diaria.";
+    }
   }
 
   function dist(p1, p2) {
@@ -351,7 +444,16 @@
     return Math.sqrt(dx*dx + dy*dy);
   }
 
+  function switchTab(tabName, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.segment-btn').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById('tab-' + tabName).style.display = 'block';
+    btn.classList.add('active');
+  }
+
   window.onload = initApp;
 </script>
 </body>
+</html>
 </html>

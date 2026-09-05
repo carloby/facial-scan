@@ -10,20 +10,21 @@
 
   <style>
     :root {
-      --bg-light: #0A0D14;
-      --card-bg: rgba(18, 24, 38, 0.85);
-      --card-border: rgba(0, 240, 255, 0.15);
-      --accent-cyan: #00F0FF;
-      --accent-green: #00FF88;
-      --accent-magenta: #FF0055;
-      --text-dark: #F0F4F8;
-      --text-muted: #8E9BAE;
+      --bg-light: #F8F9FA;
+      --card-bg: #FFFFFF;
+      --card-border: #E2E8F0;
+      --accent-main: #0F172A;
+      --accent-cyan: #0284C7;
+      --accent-green: #16A34A;
+      --accent-magenta: #DC2626;
+      --text-dark: #1E293B;
+      --text-muted: #64748B;
     }
 
     * { box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-light);
       color: var(--text-dark);
       margin: 0;
@@ -36,12 +37,11 @@
 
     h1 {
       text-align: center;
-      color: var(--accent-cyan);
+      color: var(--accent-main);
       font-size: 2.2rem;
       margin: 0 0 6px 0;
       font-weight: 700;
-      letter-spacing: -0.01em;
-      text-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+      letter-spacing: -0.02em;
     }
 
     .subtitle {
@@ -50,16 +50,16 @@
       margin-bottom: 24px;
       font-size: 0.95rem;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
     }
 
     h2 {
-      color: var(--accent-cyan);
-      font-size: 1.15rem;
+      color: var(--accent-main);
+      font-size: 1.1rem;
       margin-top: 0;
       margin-bottom: 14px;
       font-weight: 600;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.02em;
       text-transform: uppercase;
       border-bottom: 1px solid var(--card-border);
       padding-bottom: 8px;
@@ -67,13 +67,11 @@
 
     .card {
       background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 16px;
+      border-radius: 12px;
       padding: 24px;
       margin-bottom: 20px;
       border: 1px solid var(--card-border);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     }
 
     label {
@@ -87,9 +85,9 @@
     input[type="file"] {
       width: 100%;
       padding: 12px;
-      border-radius: 10px;
+      border-radius: 8px;
       border: 1px solid var(--card-border);
-      background: #121826;
+      background: #F1F5F9;
       color: var(--text-dark);
       margin-bottom: 15px;
       font-size: 0.9rem;
@@ -98,35 +96,35 @@
     .canvas-container {
       position: relative;
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
       margin: 0 auto 20px auto;
       display: none;
-      background: #000;
-      border-radius: 16px;
+      background: #E2E8F0;
+      border-radius: 12px;
       overflow: hidden;
-      border: 1px solid var(--accent-cyan);
-      box-shadow: 0 0 25px rgba(0, 240, 255, 0.2);
+      border: 2px solid var(--accent-main);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     }
 
-    canvas { width: 100%; height: auto; display: block; border-radius: 16px; }
+    canvas { width: 100%; height: auto; display: block; border-radius: 12px; }
 
     button {
-      background: var(--accent-cyan);
-      color: #000;
+      background: var(--accent-main);
+      color: #FFFFFF;
       border: none;
       padding: 12px 18px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s ease;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
     }
 
-    button:hover { background: #5DFFFF; box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
-    button.secondary { background: rgba(255, 255, 255, 0.08); color: var(--text-dark); border: 1px solid var(--card-border); }
-    button.secondary:hover { background: rgba(255, 255, 255, 0.15); }
+    button:hover { background: #334155; }
+    button.secondary { background: #F1F5F9; color: var(--text-dark); border: 1px solid var(--card-border); }
+    button.secondary:hover { background: #E2E8F0; }
     .full { width: 100%; }
 
     .dashboard-grid {
@@ -137,17 +135,17 @@
     }
 
     .metric-card {
-      background: rgba(0, 0, 0, 0.4);
+      background: #F8FAFC;
       border: 1px solid var(--card-border);
-      border-radius: 10px;
+      border-radius: 8px;
       padding: 14px;
       text-align: center;
     }
 
     .metric-value {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: 700;
-      color: var(--accent-green);
+      color: var(--accent-cyan);
       margin-top: 4px;
       font-family: monospace;
     }
@@ -160,12 +158,12 @@
     }
 
     pre {
-      background: #05070A;
+      background: #0F172A;
       padding: 16px;
-      border-radius: 10px;
+      border-radius: 8px;
       overflow-x: auto;
       font-size: 0.85rem;
-      color: var(--accent-green);
+      color: #38BDF8;
       border: 1px solid var(--card-border);
       white-space: pre-wrap;
       word-break: break-word;
@@ -173,39 +171,27 @@
     }
 
     .status { color: var(--accent-cyan); font-weight: 600; margin-top: 10px; text-align: center; font-size: 0.9rem; }
-    
-    .pill {
-      display: inline-block;
-      background: var(--accent-cyan);
-      color: #000;
-      padding: 4px 12px;
-      border-radius: 99px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-    }
 
     .rec-block {
-      background: rgba(0, 0, 0, 0.3);
-      border-left: 3px solid var(--accent-cyan);
+      background: #F8FAFC;
+      border-left: 4px solid var(--accent-main);
       padding: 14px 16px;
-      border-radius: 8px;
+      border-radius: 6px;
       margin-top: 12px;
     }
 
-    .rec-block h3 { margin: 0 0 6px 0; font-size: 0.95rem; color: var(--accent-cyan); font-weight: 600; }
+    .rec-block h3 { margin: 0 0 6px 0; font-size: 0.95rem; color: var(--accent-main); font-weight: 600; }
     .rec-block p, .rec-block li { font-size: 0.88rem; color: var(--text-dark); line-height: 1.5; }
 
     .module-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
     .module-btn {
       flex: 1;
       min-width: 140px;
-      background: rgba(255, 255, 255, 0.04);
+      background: #FFFFFF;
       color: var(--text-muted);
       border: 1px solid var(--card-border);
       padding: 10px 14px;
-      border-radius: 10px;
+      border-radius: 8px;
       font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
@@ -213,30 +199,29 @@
       transition: all 0.2s ease;
     }
 
-    .module-btn.active { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); box-shadow: 0 0 12px rgba(0, 240, 255, 0.3); }
-
-    .swatch { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #FFF; display: inline-block; }
+    .module-btn.active { background: var(--accent-main); color: #FFFFFF; border-color: var(--accent-main); }
+    .swatch { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent-main); display: inline-block; }
   </style>
 </head>
 <body>
 
 <div class="container">
   <h1>Biometric Visagism Studio</h1>
-  <p class="subtitle">Análisis facial 3D · Malla biométrica HUD · Postura &amp; Vectores de tensión</p>
+  <p class="subtitle">Análisis facial 3D · Malla HD · Asimetría dinámico-muscular</p>
 
   <!-- PROTOCOLO POSTURAL PREVIO -->
   <div class="card" style="border-left: 4px solid var(--accent-cyan);">
     <h2>⚠️ Protocolo de Captura &amp; Postura Biométrica</h2>
-    <ul style="margin: 0; padding-left: 20px; line-height: 1.6;">
-      <li><b>Posición Lingual (Mewing):</b> Pega el cuerpo de la lengua completamente contra el paladar duro (sin empujar los dientes). Esto eleva el suelo de la boca y proyecta la línea mandibular.</li>
-      <li><b>Eje Cervical:</b> Mirada fija al frente, hombros relajados y barbilla paralela al suelo. Evita adelantar la cabeza hacia la cámara.</li>
+    <ul style="margin: 0; padding-left: 20px; line-height: 1.6; font-size: 0.88rem;">
+      <li><b>Posición Lingual (Sello Palatino):</b> Apoya toda la lengua en el paladar duro. Esto eleva la zona submental y estandariza la línea mandibular independientemente de tu tipo de cara.</li>
+      <li><b>Expresión Neutra:</b> Relaja la frente y los párpados. Si sueles elevar una ceja por costumbre, intenta relajar la mirada antes del disparo para distinguir entre asimetría muscular y estructura ósea.</li>
     </ul>
   </div>
 
   <div class="card">
     <label for="imageInput">Cargar Fotografía Facial (Alta resolución):</label>
     <input type="file" id="imageInput" accept="image/*" />
-    <div id="status" class="status">Iniciando motor de detección biométrica...</div>
+    <div id="status" class="status">Carga una imagen para iniciar el análisis biométrico...</div>
   </div>
 
   <div class="canvas-container" id="canvasContainer">
@@ -245,11 +230,11 @@
   </div>
 
   <div class="module-nav" id="moduleNav" style="display:none;">
-    <button class="module-btn active" data-module="mesh">⚡ Malla Biométrica 468P</button>
-    <button class="module-btn" data-module="arrugas">🔍 Mapeo de Arrugas / Tensión</button>
-    <button class="module-btn" data-module="piel">🧴 Análisis de Piel &amp; Tono</button>
-    <button class="module-btn" data-module="postura">📐 Diagnóstico Postural &amp; Lingual</button>
-    <button class="module-btn" data-module="guasha">🌿 Masaje Gua Sha</button>
+    <button class="module-btn active" data-module="mesh">⚡ Malla HD (468P)</button>
+    <button class="module-btn" data-module="asimetria">👁️ Asimetría de Mirada &amp; Cejas</button>
+    <button class="module-btn" data-module="arrugas">🔍 Vectores de Tensión</button>
+    <button class="module-btn" data-module="piel">🧴 Tono de Piel</button>
+    <button class="module-btn" data-module="guasha">🌿 Vectores Gua Sha</button>
   </div>
 
   <!-- DASHBOARD PRINCIPAL -->
@@ -259,8 +244,14 @@
       <div class="metric-card"><div class="metric-label">Morfología</div><div class="metric-value" id="dashShape">-</div></div>
       <div class="metric-card"><div class="metric-label">Ratio Alto / Ancho</div><div class="metric-value" id="dashRatioHW">-</div></div>
       <div class="metric-card"><div class="metric-label">Tercio Dominante</div><div class="metric-value" id="dashDominantThird">-</div></div>
-      <div class="metric-card"><div class="metric-label">Inclinación Cabeza</div><div class="metric-value" id="dashTilt">-</div></div>
+      <div class="metric-card"><div class="metric-label">Desviación Cejas</div><div class="metric-value" id="dashEyebrowDiff">-</div></div>
     </div>
+  </div>
+
+  <!-- SECCIÓN ASIMETRÍA CEJAS Y MIRADA -->
+  <div id="asimetriaCard" class="card" style="display:none;">
+    <h2>Diagnóstico de Asimetría Muscular &amp; Expresiva</h2>
+    <div id="asimetriaRec" class="rec-block"></div>
   </div>
 
   <!-- SECCIÓN ARRUGAS -->
@@ -271,16 +262,9 @@
 
   <!-- SECCIÓN PIEL -->
   <div id="pielCard" class="card" style="display:none;">
-    <h2>Muestreo Espectral de Piel &amp; Fototipo</h2>
-    <div id="pielPill" class="pill"></div>
+    <h2>Muestreo Espectral de Piel</h2>
     <div id="pielSwatches" style="display:flex; gap:12px; margin:12px 0; align-items:center;"></div>
     <div id="pielRec" class="rec-block"></div>
-  </div>
-
-  <!-- SECCIÓN POSTURA & LENGUA -->
-  <div id="posturaCard" class="card" style="display:none;">
-    <h2>🎯 Diagnóstico Biomecánico &amp; Postura Lingual</h2>
-    <div id="posturaRec" class="rec-block"></div>
   </div>
 
   <!-- SECCIÓN GUA SHA -->
@@ -289,10 +273,10 @@
     <div id="guaShaCustomRec" class="rec-block"></div>
   </div>
 
-  <!-- RESULTADOS DETALLADOS JSON -->
+  <!-- RESULTADOS JSON -->
   <div class="card" id="resultsCard" style="display:none;">
     <h2>Ratios Biométricos Detallados</h2>
-    <pre id="jsonOutput">Calculando parámetros...</pre>
+    <pre id="jsonOutput">Calculando datos...</pre>
     <button id="copyBtn" class="full secondary" style="margin-top:10px;">Copiar Reporte JSON</button>
   </div>
 
@@ -321,7 +305,6 @@
     faceMesh = new FaceMesh({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
     faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
     faceMesh.onResults(onResults);
-    statusEl.innerText = "Sistema preparado. Carga una imagen para el escaneo.";
   }
 
   imageInput.addEventListener('change', (e) => {
@@ -354,13 +337,12 @@
     const jawWidth = dist(lm[58], lm[288]);
 
     const ratioHW = (totalHeight / faceWidth).toFixed(2);
-    const browDiff = Math.abs(px(lm[285]).y - px(lm[55]).y).toFixed(1);
-
-    // CÁLCULO DE EJE POSTURAL (Plomada virtual)
-    const noseTip = px(lm[1]);
-    const chinTip = px(lm[152]);
-    const angleRad = Math.atan2(chinTip.x - noseTip.x, chinTip.y - noseTip.y);
-    const tiltDegrees = Math.abs((angleRad * (180 / Math.PI)).toFixed(1));
+    
+    // Asimetría vertical de cejas en píxeles
+    const leftBrowPeak = px(lm[55]).y;
+    const rightBrowPeak = px(lm[285]).y;
+    const browDiff = Math.abs(leftBrowPeak - rightBrowPeak).toFixed(1);
+    const highestBrow = leftBrowPeak < rightBrowPeak ? "Izquierda" : "Derecha";
 
     let shape = "Ovalada";
     if (ratioHW > 1.45) shape = "Alargada";
@@ -371,7 +353,6 @@
     if (upperThird > middleThird && upperThird > lowerThird) domThird = "Superior";
     if (lowerThird > middleThird && lowerThird > upperThird) domThird = "Inferior";
 
-    // GUARDAR EN ESTRUCTURA GLOBAL Y COMPLETA
     computedData = {
       morfologia: { forma: shape, ratioAltoAncho: parseFloat(ratioHW), altoPx: Math.round(totalHeight), anchoPx: Math.round(faceWidth) },
       terciosProporciones: {
@@ -380,20 +361,20 @@
         inferiorPct: Math.round((lowerThird / totalHeight) * 100) + "%",
         tercioDominante: domThird
       },
-      posturaYGeometria: {
-        inclinacionCabezaGrados: parseFloat(tiltDegrees),
-        alertaPostural: tiltDegrees > 3.0 ? "Desviación del eje vertical. Corregir posición en futuras tomas." : "Alineación vertical óptima.",
-        prescripcionLingual: "Mantener el sello palatino (lengua pegada al paladar duro) para tonificar la musculatura suprahioidea y definir la mandíbula."
+      asimetriaExpressive: {
+        desviacionCejasPx: parseFloat(browDiff),
+        cejaElevada: highestBrow,
+        diagnostico: browDiff > 8.0 
+          ? `Asimetría expresiva notable. La ceja ${highestBrow.toLowerCase()} presenta mayor tono o elevación por micro-expresión habitual.` 
+          : "Simetría en arco supraciliar dentro de parámetros normativos."
       },
-      asimetrias: { diferenciaPicosCejasPx: parseFloat(browDiff) },
       timestamp: new Date().toISOString()
     };
 
-    // MOSTRAR EN INTERFAZ Y DASHBOARD
     document.getElementById('dashShape').innerText = shape;
     document.getElementById('dashRatioHW').innerText = ratioHW;
     document.getElementById('dashDominantThird').innerText = domThird;
-    document.getElementById('dashTilt').innerText = `${tiltDegrees}°`;
+    document.getElementById('dashEyebrowDiff').innerText = `${browDiff} px`;
 
     document.getElementById('jsonOutput').innerText = JSON.stringify(computedData, null, 2);
 
@@ -402,52 +383,42 @@
     document.getElementById('moduleNav').style.display = 'flex';
 
     setActiveModule('mesh');
-    statusEl.innerText = "Escaneo biológico completado con éxito.";
+    statusEl.innerText = "Escaneo completado correctamente.";
   }
 
-  // RENDERIZADO DE MÓDULOS
   function setActiveModule(mod) {
     document.querySelectorAll('.module-btn').forEach(b => b.classList.toggle('active', b.dataset.module === mod));
 
+    document.getElementById('asimetriaCard').style.display = (mod === 'asimetria') ? 'block' : 'none';
     document.getElementById('arrugasCard').style.display = (mod === 'arrugas') ? 'block' : 'none';
     document.getElementById('pielCard').style.display = (mod === 'piel') ? 'block' : 'none';
-    document.getElementById('posturaCard').style.display = (mod === 'postura') ? 'block' : 'none';
     document.getElementById('guaShaCard').style.display = (mod === 'guasha') ? 'block' : 'none';
 
     if (!lastLandmarks) return;
 
     if (mod === 'mesh') drawBiometricHUD(lastLandmarks);
+    if (mod === 'asimetria') drawEyebrowAsymmetry(lastLandmarks);
     if (mod === 'arrugas') drawWrinkleStressVectors(lastLandmarks);
     if (mod === 'piel') analyzeSkinTone(lastLandmarks);
-    if (mod === 'postura') drawPosturalAxis(lastLandmarks);
     if (mod === 'guasha') drawGuaShaVectors(lastLandmarks);
   }
 
-  // 1. DIBUJO DE MALLA BIOMÉTRICA (HUD SCI-FI)
+  // 1. MALLA HD CON LÍNEAS MÁS GRUESAS Y VISIBLES
   function drawBiometricHUD(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.strokeStyle = "rgba(0, 240, 255, 0.22)";
-    ctx.lineWidth = 0.5;
-
-    for (let i = 0; i < lm.length; i += 3) {
+    // Puntos más marcados (verde vibrante)
+    for (let i = 0; i < lm.length; i += 2) {
       const p = px(lm[i]);
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 1.2, 0, 2 * Math.PI);
-      ctx.fillStyle = "#00FF88";
+      ctx.arc(p.x, p.y, 2.5, 0, 2 * Math.PI);
+      ctx.fillStyle = "#16A34A";
       ctx.fill();
-
-      if (i + 1 < lm.length) {
-        const p2 = px(lm[i + 1]);
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-      }
     }
 
-    ctx.strokeStyle = "#00F0FF";
-    ctx.lineWidth = 1.5;
+    // Contornos principales con líneas más gruesas (3px)
+    ctx.strokeStyle = "#0284C7";
+    ctx.lineWidth = 3;
 
     const drawLoop = (indices) => {
       ctx.beginPath();
@@ -459,55 +430,73 @@
       ctx.stroke();
     };
 
-    drawLoop([33, 160, 158, 133, 153, 144]);
-    drawLoop([362, 385, 387, 263, 373, 380]);
-    drawLoop([61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146]);
+    drawLoop([33, 160, 158, 133, 153, 144]); // Ojo Izq
+    drawLoop([362, 385, 387, 263, 373, 380]); // Ojo Der
+    drawLoop([61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146]); // Labios
   }
 
-  // 2. DETECCIÓN Y VECTORES DE ARRUGAS
+  // 2. MÓDULO DE ASIMETRÍA DE CEJAS Y MIRADA
+  function drawEyebrowAsymmetry(lm) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const bLeft = px(lm[55]);
+    const bRight = px(lm[285]);
+
+    // Líneas horizontales de referencia en cejas (color rojo/magenta grueso)
+    ctx.strokeStyle = "#DC2626";
+    ctx.lineWidth = 3.5;
+
+    ctx.beginPath();
+    ctx.moveTo(bLeft.x - 40, bLeft.y);
+    ctx.lineTo(bLeft.x + 40, bLeft.y);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(bRight.x - 40, bRight.y);
+    ctx.lineTo(bRight.x + 40, bRight.y);
+    ctx.stroke();
+
+    // Línea conectora discontinua
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(bLeft.x, bLeft.y);
+    ctx.lineTo(bRight.x, bRight.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const diff = computedData.asimetriaExpressive.desviacionCejasPx;
+    const ceja = computedData.asimetriaExpressive.cejaElevada;
+
+    document.getElementById('asimetriaRec').innerHTML = `
+      <h3>Evaluación del Arco Supraciliar</h3>
+      <p><b>Desviación detectada:</b> ${diff} px de diferencia de altura entre el punto culminante de ambas cejas.</p>
+      <p><b>Diagnóstico:</b> Se observa mayor elevación en la ceja <b>${ceja}</b>. Esto suele responder a un hábito gesticular (hipertonía del músculo frontal) más que a un desequilibrio de la estructura ósea.</p>
+      <p><b>Ajuste recomendado:</b> Realizar pases de descompresión con Gua Sha o masaje manual descendente sobre el vientre del músculo frontal en el lado elevado para destensar la mirada.</p>
+    `;
+  }
+
+  // 3. VECTORES DE ARRUGAS Y TENSIÓN (Líneas gruesas)
   function drawWrinkleStressVectors(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
 
-    ctx.strokeStyle = "rgba(255, 0, 85, 0.85)";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#DC2626";
+    ctx.lineWidth = 3.5;
     const fCenter = px(lm[10]), fLeft = px(lm[71]), fRight = px(lm[301]);
 
-    for (let offset = -20; offset <= 20; offset += 10) {
+    for (let offset = -20; offset <= 20; offset += 15) {
       ctx.beginPath();
       ctx.moveTo(fLeft.x, fLeft.y + offset);
       ctx.quadraticCurveTo(fCenter.x, fCenter.y + offset - 8, fRight.x, fRight.y + offset);
       ctx.stroke();
     }
 
-    const drawCrowFeet = (eyeCorner, direction) => {
-      const base = px(eyeCorner);
-      for (let angle of [-0.3, 0, 0.3]) {
-        ctx.beginPath();
-        ctx.moveTo(base.x, base.y);
-        ctx.lineTo(base.x + direction * 25 * Math.cos(angle), base.y + 25 * Math.sin(angle));
-        ctx.stroke();
-      }
-    };
-    drawCrowFeet(lm[33], -1);
-    drawCrowFeet(lm[263], 1);
-
-    const nLeft = px(lm[205]), lipLeft = px(lm[61]);
-    const nRight = px(lm[425]), lipRight = px(lm[291]);
-    
-    ctx.beginPath(); ctx.moveTo(nLeft.x, nLeft.y); ctx.quadraticCurveTo(lipLeft.x - 10, lipLeft.y - 10, lipLeft.x, lipLeft.y + 10); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(nRight.x, nRight.y); ctx.quadraticCurveTo(lipRight.x + 10, lipRight.y - 10, lipRight.x, lipRight.y + 10); ctx.stroke();
-
-    ctx.restore();
-
     document.getElementById('arrugasRec').innerHTML = `
       <h3>Vectores Biomédicos Detectados</h3>
-      <p><b>Frente y Entrecejo:</b> Alta tensión por dinamismo del músculo occipitofrontal.<br>
-      <b>Surcos Nasogenianos:</b> Vectores de fricción biomecánica activa detectados en el tercio inferior.</p>
+      <p><b>Zona Frontal:</b> Mapeo de tensión activa por dinámicas de expresión en el tercio superior.</p>
     `;
   }
 
-  // 3. ANÁLISIS DE PIEL Y MUESTREO REAL
+  // 4. ANÁLISIS DE PIEL
   function analyzeSkinTone(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -521,56 +510,28 @@
     const pixel = sCtx.getImageData(Math.round(cheekPt.x), Math.round(cheekPt.y), 1, 1).data;
     const hexColor = `#${((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1)}`;
 
-    ctx.strokeStyle = "#00FF88";
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#16A34A";
+    ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.arc(cheekPt.x, cheekPt.y, 18, 0, 2 * Math.PI);
+    ctx.arc(cheekPt.x, cheekPt.y, 22, 0, 2 * Math.PI);
     ctx.stroke();
 
-    document.getElementById('pielPill').innerText = `Color Piel Detectado: ${hexColor}`;
     document.getElementById('pielSwatches').innerHTML = `
-      <span>Tono Muestreado:</span>
+      <b>Tono Muestreado (${hexColor}):</b>
       <div class="swatch" style="background-color: ${hexColor};"></div>
     `;
 
     document.getElementById('pielRec').innerHTML = `
       <h3>Diagnóstico Dermocosmético</h3>
-      <p>Muestreo analítico efectuado sobre zona malar. Pigmentación con subtono equilibrado. Se recomienda protección solar de amplio espectro SPF50+ y activos antioxidantes como Vitamina C o Niacinamida para proteger la barrera cutánea.</p>
+      <p>Muestreo analítico directo sobre la zona malar para ajustar productos de corrección de tono y fotoprotección.</p>
     `;
   }
 
-  // 4. PLOMADA POSTURAL Y EVALUACIÓN LINGUAL
-  function drawPosturalAxis(lm) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-
-    const topHead = px(lm[10]);
-    const chin = px(lm[152]);
-
-    // Dibujar Plomada Biométrica en la Canvas
-    ctx.strokeStyle = "#FF0055";
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 4]);
-    ctx.beginPath();
-    ctx.moveTo(topHead.x, 0);
-    ctx.lineTo(chin.x, canvas.height);
-    ctx.stroke();
-
-    ctx.restore();
-
-    document.getElementById('posturaRec').innerHTML = `
-      <h3>Prescripción Postural &amp; Posición Lingual</h3>
-      <p><b>Posición de Reposo Lingual (Mewing):</b> Apoya el cuerpo completo de la lengua firmemente contra el paladar duro. Esto activa la musculatura suprahioidea, eleva el suelo de la boca y previene el descolgamiento bajo la mandíbula.</p>
-      <p><b>Alineación Cervical:</b> Mantén el eje de las orejas alineado con los hombros para evitar la "cabeza adelantada", la cual acorta los pliegues del cuello y desdibuja el mentón.</p>
-    `;
-  }
-
-  // 5. VECTORES GUA SHA
+  // 5. VECTORES GUA SHA (Líneas muy visibles)
   function drawGuaShaVectors(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-    ctx.strokeStyle = "#00FF88";
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#16A34A";
+    ctx.lineWidth = 4;
 
     const drawArrow = (pFrom, pTo) => {
       const f = px(pFrom), t = px(pTo);
@@ -584,11 +545,10 @@
     drawArrow(lm[152], lm[454]);
     drawArrow(lm[61], lm[127]);
     drawArrow(lm[291], lm[356]);
-    ctx.restore();
 
     document.getElementById('guaShaCustomRec').innerHTML = `
-      <h3>Ruta de Drenaje Linfático Personalizada</h3>
-      <p>Aplica la piedra Gua Sha en ángulo de 15° siguiendo los vectores verdes ascendentes trazados desde el mentón hasta los puntos ganglionares temporales.</p>
+      <h3>Ruta de Drenaje Linfático</h3>
+      <p>Sigue las líneas verdes gruesas dibujadas sobre la imagen utilizando la piedra Gua Sha a 15° de inclinación.</p>
     `;
   }
 

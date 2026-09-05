@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Laboratorio de Visagismo Facial</title>
+  <title>Laboratorio de Visagismo Facial (v2 - módulo de precisión)</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
@@ -43,7 +43,7 @@
 
 <div class="container">
   <h1>Laboratorio de Visagismo Facial</h1>
-  <p class="subtitle">Forma de cara · guía de cejas · recomendaciones · historial local — sin clave API, sin coste</p>
+  <p class="subtitle">Forma de cara · guía de cejas · malla de precisión (splines) · recomendaciones · historial local</p>
 
   <div class="card">
     <label for="imageInput">Sube tu foto de frente (Luz neutra, cara descubierta):</label>
@@ -63,6 +63,7 @@
 
     <div id="recBrows" class="rec-block"></div>
     <div id="recHair" class="rec-block"></div>
+    <div id="precisionInfo" class="rec-block"></div>
 
     <button id="copyBtn" class="full secondary">Copiar JSON</button>
     <button id="saveBtn" class="full">Guardar en mi historial</button>
@@ -71,7 +72,9 @@
       La forma de cara y las recomendaciones de cejas/pelo son una estimación de estilo (visagismo)
       basada en proporciones geométricas de esta foto — no una medición clínica. La guía de cejas dibujada
       sobre la imagen usa la técnica clásica de tres puntos (inicio / pico / final) como referencia orientativa,
-      no una plantilla exacta a seguir al milímetro.
+      no una plantilla exacta a seguir al milímetro. La malla densa (splines) es una interpolación matemática
+      entre los puntos reales detectados, útil para ver el contorno con más detalle visual, pero no añade
+      información que MediaPipe no haya detectado ya — no "inventa" precisión donde no la hay.
     </p>
   </div>
 
@@ -84,6 +87,48 @@
 
 <script>
   const STORAGE_KEY = 'visagismo_historial_v1';
+
+  // Índices de landmarks de MediaPipe Face Mesh (478 puntos: 468 base + 10 de iris,
+  // disponibles gracias a refineLandmarks: true). Ceja izquierda/derecha son
+  // conjuntos de puntos sin un orden lineal nativo; se ordenan por coordenada X
+  // para trazar un arco coherente de izquierda a derecha (simplificación razonable,
+  // ya que las cejas no tienen pliegues verticales).
+  const LEFT_EYEBROW_IDX = [276, 283, 282, 295, 285, 336, 296, 334, 293, 300];
+  const RIGHT_EYEBROW_IDX = [46, 53, 52, 65, 55, 107, 66, 105, 63, 70];
+  // Contorno exterior de labios, en orden ya recorrible como bucle cerrado
+  // (secuencia estándar de MediaPipe FACEMESH_LIPS, borde exterior).
+  const LIPS_OUTER_IDX = [
+    61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291,
+    375, 321, 405, 314, 17, 84, 181, 91, 146
+  ];
+
+  // Interpolación por curvas de Catmull-Rom: genera puntos densificados que pasan
+  // exactamente por los puntos de control originales (a diferencia de Bézier, donde
+  // los puntos intermedios no son "de control" sino "de paso", que es justo lo que
+  // interesa aquí: no queremos suavizar/alejarnos de los landmarks reales, sino
+  // rellenar el hueco entre ellos).
+  function catmullRomSpline(points, pointsPerSegment = 20, closed = false) {
+    const n = points.length;
+    if (n < 3) return points.slice();
+    const getPoint = (i) => closed
+      ? points[(i + n) % n]
+      : points[Math.max(0, Math.min(n - 1, i))];
+
+    const result = [];
+    const segmentCount = closed ? n : n - 1;
+    for (let i = 0; i < segmentCount; i++) {
+      const p0 = getPoint(i - 1), p1 = getPoint(i), p2 = getPoint(i + 1), p3 = getPoint(i + 2);
+      for (let t = 0; t < pointsPerSegment; t++) {
+        const tt = t / pointsPerSegment;
+        const tt2 = tt * tt, tt3 = tt2 * tt;
+        const x = 0.5 * ((2 * p1.x) + (-p0.x + p2.x) * tt + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * tt2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * tt3);
+        const y = 0.5 * ((2 * p1.y) + (-p0.y + p2.y) * tt + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * tt2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * tt3);
+        result.push({ x, y });
+      }
+    }
+    if (!closed) result.push(points[n - 1]);
+    return result;
+  }
 
   let faceMesh;
   let faceMeshReady = false;
@@ -273,12 +318,38 @@
 
     drawEyebrowGuides(lm, px);
 
+    let precision = { totalPoints: 0, leftOffset: 0, rightOffset: 0 };
+    try {
+      precision = drawPrecisionMesh(lm, px);
+    } catch (err) {
+      console.warn("Módulo de precisión (splines) falló, se omite:", err);
+    }
+
+    computedRatios.puntos_analizados = lm.length; // 478 con refineLandmarks activado
+    computedRatios.modulo_precision = {
+      micropuntos_generados: precision.totalPoints,
+      ceja_izq_pico_natural_vs_guia_px: precision.leftOffset.toFixed(1),
+      ceja_der_pico_natural_vs_guia_px: precision.rightOffset.toFixed(1)
+    };
+
     document.getElementById('shapePill').innerText = "Forma de cara estimada: " + faceShapeResult.shape;
     document.getElementById('jsonOutput').innerText = JSON.stringify(computedRatios, null, 2);
     document.getElementById('recBrows').innerHTML =
       "<h3>Guía de cejas</h3><p>" + faceShapeResult.browAdvice + " En la imagen, las líneas discontinuas marcan tres puntos orientativos por ceja: <b>inicio</b> (alineado con el borde exterior de tu fosa nasal), <b>pico del arco</b> (alineado con el borde exterior de tu iris) y <b>final</b> (alineado con la esquina exterior del ojo). Es una guía de referencia, no una plantilla exacta.</p>";
     document.getElementById('recHair').innerHTML =
       "<h3>Corte de pelo / framing</h3><p>" + faceShapeResult.hairAdvice + "</p>";
+
+    const fmtOffset = (px) => {
+      const abs = Math.abs(px).toFixed(0);
+      if (abs < 3) return "prácticamente alineado con la guía";
+      return (px > 0 ? "más hacia fuera" : "más hacia dentro") + " que la guía (~" + abs + "px)";
+    };
+    document.getElementById('precisionInfo').innerHTML =
+      "<h3>Módulo de precisión (splines)</h3><p>" +
+      "Se generaron <b>" + precision.totalPoints + " micropuntos</b> mediante interpolación Catmull-Rom sobre 478 landmarks base " +
+      "(líneas verde lima = contorno denso de cejas, línea magenta = contorno denso de labios). " +
+      "Tu pico natural de ceja izquierda está " + fmtOffset(precision.leftOffset) + "; " +
+      "el de la derecha está " + fmtOffset(precision.rightOffset) + ".</p>";
 
     statusEl.innerText = "¡Análisis completado!";
     statusEl.style.color = "#10b981";
@@ -287,6 +358,55 @@
 
     renderHistory();
     historyCard.style.display = 'block';
+  }
+
+  // Genera y dibuja la submalla de alta densidad (splines) para cejas y labios,
+  // y calcula el "pico natural" de cada ceja (el punto más alto de la curva real)
+  // comparado con el pico recomendado por la guía de 3 puntos (basada en el iris).
+  function drawPrecisionMesh(lm, px) {
+    const leftBrowPts = LEFT_EYEBROW_IDX.map(i => px(lm[i])).sort((a, b) => a.x - b.x);
+    const rightBrowPts = RIGHT_EYEBROW_IDX.map(i => px(lm[i])).sort((a, b) => a.x - b.x);
+    const lipsPts = LIPS_OUTER_IDX.map(i => px(lm[i]));
+
+    const leftBrowDense = catmullRomSpline(leftBrowPts, 60, false);
+    const rightBrowDense = catmullRomSpline(rightBrowPts, 60, false);
+    const lipsDense = catmullRomSpline(lipsPts, 50, true);
+
+    ctx.save();
+
+    // Cejas densificadas (verde lima)
+    ctx.strokeStyle = "#a3e635";
+    ctx.lineWidth = 1.5;
+    [leftBrowDense, rightBrowDense].forEach((curve) => {
+      ctx.beginPath();
+      curve.forEach((p, idx) => idx === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+      ctx.stroke();
+    });
+
+    // Labios densificados (magenta), como bucle cerrado
+    ctx.strokeStyle = "#f472b6";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    lipsDense.forEach((p, idx) => idx === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.restore();
+
+    // Pico natural real = punto más alto (menor Y) de la curva densificada de cada ceja
+    const naturalPeak = (curve) => curve.reduce((min, p) => (p.y < min.y ? p : min), curve[0]);
+    const leftPeak = naturalPeak(leftBrowDense);
+    const rightPeak = naturalPeak(rightBrowDense);
+
+    // Pico recomendado por la guía de 3 puntos = alineado con el borde exterior del iris
+    const leftGuidePeakX = px(lm[468]).x;
+    const rightGuidePeakX = px(lm[473]).x;
+
+    return {
+      totalPoints: leftBrowDense.length + rightBrowDense.length + lipsDense.length,
+      leftOffset: leftPeak.x - leftGuidePeakX,
+      rightOffset: rightPeak.x - rightGuidePeakX
+    };
   }
 
   // Dibuja la guía clásica de cejas de 3 puntos (inicio / pico / final) sobre el canvas
@@ -446,6 +566,9 @@
     renderHistory();
   }
 </script>
+
+</body>
+</html>
 
 </body>
 </html>

@@ -3,20 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aesthetic AI — Clinical Biometrics (Apple Light v21)</title>
+  <title>Laboratorio de Visagismo Facial</title>
 
-  <!-- MediaPipe Scripts con carga asegurada -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 
   <style>
     :root {
       --bg-light: #F5F5F7;
-      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-bg: rgba(255, 255, 255, 0.9);
       --card-border: rgba(0, 0, 0, 0.08);
       --accent-apple: #0071E3;
+      --accent-apple-hover: #0058B3;
       --accent-red: #FF3B30;
-      --accent-green: #34C759;
       --text-dark: #1D1D1F;
       --text-muted: #86868B;
     }
@@ -28,384 +27,910 @@
       background-color: var(--bg-light);
       color: var(--text-dark);
       margin: 0;
-      padding: 40px 20px;
+      padding: 30px 20px;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
 
-    .container { max-width: 1080px; margin: 0 auto; }
-
-    header {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-
-    .badge-top {
-      display: inline-block;
-      background: rgba(0, 113, 227, 0.1);
-      color: var(--accent-apple);
-      padding: 5px 14px;
-      border-radius: 99px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      margin-bottom: 12px;
-    }
+    .container { max-width: 900px; margin: 0 auto; }
 
     h1 {
-      font-size: 2.5rem;
+      text-align: center;
+      color: var(--text-dark);
+      font-size: 2.2rem;
+      margin: 0 0 6px 0;
       font-weight: 700;
       letter-spacing: -0.03em;
-      color: var(--text-dark);
-      margin: 0 0 8px 0;
     }
 
     .subtitle {
+      text-align: center;
       color: var(--text-muted);
-      font-size: 1.05rem;
-      margin: 0 auto;
-      max-width: 540px;
-    }
-
-    /* Cards Estilo Apple Studio Display */
-    .apple-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--card-border);
-      border-radius: 22px;
-      padding: 28px;
       margin-bottom: 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      font-size: 0.98rem;
     }
 
     h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 0 0 18px 0;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* Dropzone de Carga */
-    .file-dropzone {
-      border: 2px dashed rgba(0, 0, 0, 0.15);
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 16px;
-      padding: 32px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .file-dropzone:hover {
-      border-color: var(--accent-apple);
-      background: rgba(0, 113, 227, 0.02);
-    }
-
-    input[type="file"] { display: none; }
-
-    .dropzone-label {
-      font-weight: 600;
-      font-size: 1rem;
       color: var(--text-dark);
+      font-size: 1.25rem;
+      margin-top: 0;
+      margin-bottom: 14px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    /* Cards Estilo Apple Light */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    }
+
+    label {
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-dark);
+      font-size: 0.92rem;
     }
 
-    .dropzone-sub { font-size: 0.85rem; color: var(--text-muted); }
-
-    /* Layout */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
+    input[type="file"], input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: #FFFFFF;
+      color: var(--text-dark);
+      box-sizing: border-box;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
     }
 
-    @media (min-width: 880px) {
-      .main-grid { grid-template-columns: 440px 1fr; }
-    }
-
-    /* Visor de Imagen */
-    .canvas-wrapper {
+    .canvas-container {
       position: relative;
       width: 100%;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid var(--card-border);
+      max-width: 480px;
+      margin: 0 auto 20px auto;
+      display: none;
       background: #E5E5EA;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
     }
 
-    canvas { width: 100%; height: auto; display: block; }
+    canvas { width: 100%; height: auto; display: block; border-radius: 16px; }
 
-    /* Pestañas Segmentadas iOS */
-    .segmented-control {
-      display: flex;
-      background: rgba(120, 120, 128, 0.12);
-      padding: 3px;
-      border-radius: 10px;
-      margin-bottom: 22px;
-    }
-
-    .segment-btn {
-      flex: 1;
-      background: transparent;
+    button {
+      background: var(--accent-apple);
+      color: white;
       border: none;
-      padding: 8px 14px;
-      font-size: 0.85rem;
+      padding: 12px 18px;
+      font-size: 0.95rem;
       font-weight: 600;
-      color: var(--text-dark);
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 8px;
+    }
+
+    button:hover { background: var(--accent-apple-hover); }
+    button.secondary { background: rgba(120, 120, 128, 0.12); color: var(--text-dark); }
+    button.secondary:hover { background: rgba(120, 120, 128, 0.22); }
+    button.danger { background: rgba(255, 59, 48, 0.1); color: var(--accent-red); border: 1px solid rgba(255, 59, 48, 0.2); }
+    button.danger:hover { background: rgba(255, 59, 48, 0.2); }
+    .full { width: 100%; }
+
+    pre {
+      background: #FFFFFF;
+      padding: 16px;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-size: 0.82rem;
+      color: var(--accent-apple);
+      border: 1px solid var(--card-border);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .status { color: #D97706; font-weight: 600; margin-top: 10px; text-align: center; font-size: 0.9rem; }
+    .error-box { background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.2); color: var(--accent-red); padding: 12px 16px; border-radius: 12px; margin-top: 12px; font-size: 0.85rem; display: none; white-space: pre-wrap; word-break: break-word; }
+    
+    .pill {
+      display: inline-block;
+      background: var(--accent-apple);
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .rec-block {
+      background: #FFFFFF;
+      border-left: 4px solid var(--accent-apple);
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-top: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .rec-block h3 { margin: 0 0 6px 0; font-size: 0.95rem; color: var(--accent-apple); font-weight: 600; }
+    .rec-block p { margin: 0; font-size: 0.9rem; color: #3A3A3C; line-height: 1.5; }
+
+    .history-item { border-bottom: 1px solid var(--card-border); padding: 12px 0; font-size: 0.88rem; color: #3A3A3C; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .history-item:last-child { border-bottom: none; }
+    .history-meta { color: var(--text-muted); font-size: 0.78rem; }
+    
+    .disclaimer { font-size: 0.8rem; color: var(--text-muted); margin-top: 14px; line-height: 1.4; }
+
+    .module-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #FFFFFF;
+      color: var(--text-dark);
+      border: 1px solid var(--card-border);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 8px;
       transition: all 0.2s ease;
     }
 
-    .segment-btn.active {
-      background: #FFFFFF;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    }
-
-    /* Metricas HUD */
-    .hud-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .hud-card {
-      background: #FFFFFF;
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-    }
-
-    .hud-title {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .hud-value {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--text-dark);
-      letter-spacing: -0.02em;
-    }
-
-    /* Barras de Tercios */
-    .bar-group { margin-bottom: 14px; }
-    .bar-meta { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 500; margin-bottom: 5px; }
-    .bar-track { background: rgba(0, 0, 0, 0.06); height: 8px; border-radius: 99px; overflow: hidden; }
-    .bar-fill { background: var(--accent-apple); height: 100%; border-radius: 99px; transition: width 0.5s ease; }
-
-    /* Estado & Swatches */
-    .status-badge {
-      display: block;
-      text-align: center;
-      padding: 10px;
-      border-radius: 12px;
-      background: rgba(0, 113, 227, 0.08);
-      font-size: 0.88rem;
-      color: var(--accent-apple);
-      font-weight: 600;
-      margin-top: 14px;
-    }
-
-    .swatch-box {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      border: 2px solid #FFFFFF;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      display: inline-block;
-    }
+    .module-btn:hover:not(:disabled) { background: rgba(0, 113, 227, 0.05); border-color: rgba(0, 113, 227, 0.2); }
+    .module-btn.active { background: var(--accent-apple); color: #ffffff; border-color: var(--accent-apple); }
+    .module-btn:disabled { color: var(--text-muted); cursor: not-allowed; opacity: 0.5; background: #FAFAFA; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <header>
-    <div class="badge-top">Aesthetic AI Studio v21</div>
-    <h1>Clinical Visagism &amp; Biometrics</h1>
-    <p class="subtitle">Análisis antropométrico facial y evaluación colorimétrica cutánea.</p>
-  </header>
+  <h1>Laboratorio de Visagismo Facial</h1>
+  <p class="subtitle">Forma de cara · guía de cejas · malla de precisión (splines) · recomendaciones · historial local</p>
 
-  <div class="main-grid">
-    <!-- Columna Izquierda: Carga y Visor -->
-    <div>
-      <div class="apple-card">
-        <h2>📷 Imagen del Paciente</h2>
-        <div class="file-dropzone" onclick="document.getElementById('imageInput').click();">
-          <span class="dropzone-label">Haz clic para subir foto</span>
-          <span class="dropzone-sub">Procesamiento local confidencial</span>
-          <input type="file" id="imageInput" accept="image/*" />
-        </div>
-        <div id="status" class="status-badge">Esperando imagen...</div>
-      </div>
+  <div class="card" id="moduleNav" style="display:none;">
+    <h2>Suite de Visagismo</h2>
+    <button class="module-btn active" data-module="cejas">👁️ Cejas &amp; Visagismo</button>
+    <button class="module-btn" data-module="guasha">🌿 Masaje &amp; Yoga Facial (Gua Sha)</button>
+    <button class="module-btn" data-module="piel">🧴 Piel &amp; Dermocosmética</button>
+    <button class="module-btn" data-module="pelo" disabled>💇 Estilismo Capilar &amp; Color (próximamente)</button>
+    <button class="module-btn" data-module="postura" disabled title="Requiere un modelo adicional (MediaPipe Pose) que aún no está integrado">🧍 Postura &amp; Cuello (próximamente — necesita otro modelo)</button>
+  </div>
 
-      <div class="canvas-wrapper" id="canvasContainer" style="display:none;">
-        <img id="photoImg" style="width:100%; height:auto; display:block;" />
-        <canvas id="outputCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
-      </div>
+  <div class="card">
+    <label for="imageInput">Sube tu foto de frente (Luz neutra, cara descubierta):</label>
+    <input type="file" id="imageInput" accept="image/*" />
+    <div id="status" class="status">Cargando motor de escaneo...</div>
+    <div id="errorBox" class="error-box"></div>
+  </div>
+
+  <div class="canvas-container" id="canvasContainer">
+    <img id="photoImg" style="width:100%; height:auto; display:block; border-radius:16px;" />
+    <canvas id="outputCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none; pointer-events:none;"></canvas>
+    <div id="sliderDivider" style="position:absolute; top:0; bottom:0; left:100%; width:2px; background:var(--accent-apple); box-shadow:0 0 8px rgba(0,113,227,0.8); pointer-events:none; display:none;"></div>
+  </div>
+
+  <div id="sliderControlWrap" class="card" style="display:none;">
+    <label>Antes ⟷ Después: <span id="sliderValueLabel">100%</span></label>
+    <input type="range" id="beforeAfterSlider" min="0" max="100" value="100" class="full" />
+    <button id="holdOriginalBtn" class="full secondary" style="margin-top:8px;">Mantener pulsado para ver original</button>
+  </div>
+
+  <div id="visagismToolsCard" class="card" style="display:none;">
+    <h2>Guía visagista</h2>
+
+    <label style="display:flex; align-items:center; gap:8px; font-weight:400; color:var(--text-dark);">
+      <input type="checkbox" id="toggleGuideLines" checked style="width:auto; margin:0;">
+      Mostrar guía de líneas visagista
+    </label>
+
+    <p class="disclaimer">
+      El botón "Ver Resultado Ideal" dibuja una línea de trazado (blanca con contorno negro, como un
+      lápiz de estética) marcando dónde recomendamos el arco de ceja — no modifica ni un píxel de la
+      imagen original, solo dibuja encima.
+    </p>
+  </div>
+
+  <div id="guaShaCard" class="card" style="display:none;">
+    <h2>Masaje &amp; Yoga Facial (Gua Sha)</h2>
+
+    <label style="display:flex; align-items:center; gap:8px; font-weight:400; color:var(--text-dark);">
+      <input type="checkbox" id="toggleGuaSha" checked style="width:auto; margin:0;">
+      Mostrar vectores de presión
+    </label>
+
+    <div class="rec-block" style="margin-top:12px;">
+      <h3>Cómo leer las flechas</h3>
+      <p>
+        Cada flecha marca la dirección habitual de trazo en las rutinas de Gua Sha / yoga facial:
+        mandíbula (mentón → sien), pómulo (comisura de la boca → sien), contorno de ojos (lagrimal →
+        sien, trazo más suave) y frente (centro → sienes). El sentido de la flecha es el sentido del
+        trazo — siempre hacia fuera y hacia arriba, nunca hacia abajo.
+      </p>
     </div>
 
-    <!-- Columna Derecha: Controles y Diagnóstico -->
-    <div>
-      <div class="segmented-control" id="mainNav" style="display:none;">
-        <button class="segment-btn active" onclick="switchTab('dashboard', this)">📊 Antropometría</button>
-        <button class="segment-btn" onclick="switchTab('piel', this)">🧴 Piel &amp; Rojez</button>
-      </div>
+    <p class="disclaimer">
+      Esto es una guía de estilo de masaje facial habitual (drenaje/tonificación), no un consejo
+      médico ni fisioterapéutico. Si tienes alguna condición de piel, acné activo, o un problema
+      articular/muscular, consulta a un profesional antes de aplicar presión sobre la cara.
+    </p>
+  </div>
 
-      <!-- TAB 1: DASHBOARD DE MEDICIONES -->
-      <div class="apple-card tab-content" id="tab-dashboard" style="display:none;">
-        <h2>📊 Diagnóstico Antropométrico</h2>
-        
-        <div class="hud-grid">
-          <div class="hud-card">
-            <div class="hud-title">Landmarks Detección</div>
-            <div class="hud-value" id="hudPoints">0</div>
-          </div>
-          <div class="hud-card">
-            <div class="hud-title">Índice Interocular</div>
-            <div class="hud-value" id="hudInterocular">0.00</div>
-          </div>
-          <div class="hud-card">
-            <div class="hud-title">Proporción Mandíbula/Pómulo</div>
-            <div class="hud-value" id="hudJawRatio">0.00</div>
-          </div>
-          <div class="hud-card">
-            <div class="hud-title">Desviación Cejas</div>
-            <div class="hud-value" id="hudBrowAsym">0.0 px</div>
-          </div>
-        </div>
+  <div id="pielCard" class="card" style="display:none;">
+    <h2>Piel &amp; Dermocosmética</h2>
 
-        <h3 style="font-size:0.85rem; color:var(--text-muted); text-transform:uppercase; margin-bottom:12px;">Equilibrio de Tercios Faciales</h3>
-        
-        <div class="bar-group">
-          <div class="bar-meta"><span>Tercio Superior (Frente)</span><span id="pctTop">0%</span></div>
-          <div class="bar-track"><div class="bar-fill" id="fillTop" style="width:0%"></div></div>
-        </div>
-        <div class="bar-group">
-          <div class="bar-meta"><span>Tercio Medio (Ojos/Nariz)</span><span id="pctMid">0%</span></div>
-          <div class="bar-track"><div class="bar-fill" id="fillMid" style="width:0%"></div></div>
-        </div>
-        <div class="bar-group">
-          <div class="bar-meta"><span>Tercio Inferior (Mentón)</span><span id="pctBot">0%</span></div>
-          <div class="bar-track"><div class="bar-fill" id="fillBot" style="width:0%"></div></div>
-        </div>
-      </div>
+    <div id="pielPill" class="pill"></div>
+    <div id="pielSwatches" style="display:flex; gap:10px; margin:10px 0; flex-wrap:wrap;"></div>
 
-      <!-- TAB 2: DERMOCOSMÉTICA Y ROJEZ RECALIBRADA -->
-      <div class="apple-card tab-content" id="tab-piel" style="display:none;">
-        <h2>🧴 Análisis de Tono y Eritema Cutáneo</h2>
-        
-        <div class="hud-grid">
-          <div class="hud-card">
-            <div class="hud-title">Nivel de Eritema (Rojez)</div>
-            <div class="hud-value" id="hudErythema" style="font-size:1.15rem;">Buscando...</div>
-          </div>
-          <div class="hud-card">
-            <div class="hud-title">Muestra de Color</div>
-            <div style="margin-top:4px;"><span id="swatchEl" class="swatch-box"></span></div>
-          </div>
-        </div>
+    <div id="pielRec" class="rec-block"></div>
 
-        <div id="pielRecommendations" style="font-size:0.92rem; line-height:1.6; color:#3A3A3C; margin-top:10px;">
-          Sube una foto para calcular las pautas cosmetológicas.
-        </div>
-      </div>
+    <p class="disclaimer">
+      El color se muestrea directamente de los píxeles de tu foto (zonas de mejillas, frente y
+      mentón) — no es una detección clínica ni un diagnóstico dermatológico, depende bastante de la
+      luz con la que se hizo la foto. Es una referencia orientativa para elegir ingredientes/rutina,
+      no sustituye a un dermatólogo.
+    </p>
+  </div>
+
+  <div id="maskCard" class="card" style="display:none;">
+    <h2>Máscara de corrección (Capa 2 — gratis, sin IA)</h2>
+    <p style="font-size:0.9rem; color:#3A3A3C; margin-top:0;">
+      Genera la máscara de inpainting: blanco = zona a corregir (cejas), negro = todo lo que debe
+      permanecer intacto (piel, luz, fondo, identidad). Es el archivo que le pasarías a un servicio
+      de ControlNet + SDXL inpainting (ej. Replicate) junto con tu foto original.
+    </p>
+    <button id="genMaskBtn" class="full secondary">Generar máscara de cejas</button>
+    <div id="maskPreviewWrap" style="display:none; margin-top:12px;">
+      <img id="maskPreviewImg" style="width:100%; border-radius:12px; border:1px solid var(--card-border); background:#000;" />
+      <a id="maskDownloadLink" download="mascara-cejas.png" class="full" style="display:block; text-align:center; margin-top:8px; background:rgba(120, 120, 128, 0.12); color:var(--text-dark); padding:12px; border-radius:12px; text-decoration:none; font-weight:600;">Descargar máscara (PNG)</a>
     </div>
+    <p class="disclaimer">
+      Esta máscara por sí sola no genera nada — es el "dónde" para un modelo generativo real
+      (ControlNet + SDXL inpainting), que necesitaría ejecutarse en un servicio con GPU (Replicate,
+      Stability AI...), no algo gratuito con Canvas. Aun así, tenerla lista ahora te ahorra ese paso
+      el día que decidas conectar ese servicio.
+    </p>
+  </div>
+
+  <div id="aiGenCard" class="card" style="display:none;">
+    <h2>Vista Ideal generada por IA (Gemini 2.5 Flash Image)</h2>
+
+    <label for="googleApiKey">Clave API de Google AI Studio:</label>
+    <input type="text" id="googleApiKey" placeholder="AIza..." />
+
+    <button id="aiGenBtn" class="full">Generar con IA</button>
+
+    <div id="aiGenStatus" class="status" style="display:none;"></div>
+    <div id="aiGenErrorBox" class="error-box"></div>
+
+    <div id="aiGenResultWrap" style="display:none; margin-top:14px;">
+      <img id="aiGenResultImg" style="width:100%; border-radius:12px; border:1px solid var(--card-border);" />
+      <a id="aiGenDownloadLink" download="resultado-ideal-ia.png" class="full" style="display:block; text-align:center; margin-top:8px; background:rgba(120, 120, 128, 0.12); color:var(--text-dark); padding:12px; border-radius:12px; text-decoration:none; font-weight:600;">Descargar imagen</a>
+    </div>
+
+    <p class="disclaimer">
+      Esto llama a la API de Google (Gemini 2.5 Flash Image / "Nano Banana") con tu clave, no la
+      nuestra — la petición sale directamente desde tu navegador. Es un modelo generativo, no un
+      editor de píxeles: puede alterar detalles que no pediste, y Google añade una marca de agua
+      invisible (SynthID) a las imágenes que edita. Puede tener coste según tu cuenta — revisa
+      ai.google.dev/pricing antes de usarlo con frecuencia.
+    </p>
+  </div>
+
+  <div class="card" id="resultsCard" style="display:none;">
+    <div id="shapePill" class="pill"></div>
+    <h2>Ratios extraídos</h2>
+    <pre id="jsonOutput"></pre>
+
+    <div id="recBrows" class="rec-block"></div>
+    <div id="recHair" class="rec-block"></div>
+    <div id="precisionInfo" class="rec-block"></div>
+
+    <button id="copyBtn" class="full secondary">Copiar JSON</button>
+    <button id="saveBtn" class="full">Guardar en mi historial</button>
+    <button id="idealBtn" class="full" style="background:var(--text-dark);">Ver Resultado Ideal</button>
+    <p class="disclaimer" style="color:#D97706;">
+      La vista "Resultado Ideal" es una previsualización ilustrativa hecha 100% con Canvas nativo
+      (espejado de la ceja más simétrica, relleno de labios, y un ligero desplazamiento de la zona
+      de los pómulos) — no usa ninguna API externa, ni es un retoque profesional, ni una simulación
+      médica. Usa el slider para comparar tu foto original con esta previsualización.
+    </p>
+
+    <p class="disclaimer">
+      La forma de cara y las recomendaciones de cejas/pelo son una estimación de estilo (visagismo)
+      basada en proporciones geométricas de esta foto — no una medición clínica. La guía de cejas dibujada
+      sobre la imagen usa la técnica clásica de tres puntos (inicio / pico / final) como referencia orientativa,
+      no una plantilla exacta a seguir al milímetro. La malla densa (splines) es una interpolación matemática
+      entre los puntos reales detectados, útil para ver el contorno con más detalle visual, pero no añade
+      información que MediaPipe no haya detectado ya — no "inventa" precisión donde no la hay.
+    </p>
+  </div>
+
+  <div class="card" id="historyCard" style="display:none;">
+    <h2>Tu historial (guardado en este navegador)</h2>
+    <div id="historyList"></div>
+    <button id="clearHistoryBtn" class="full danger" style="margin-top:12px;">Borrar historial</button>
   </div>
 </div>
 
 <script>
+  const STORAGE_KEY = 'visagismo_historial_v1';
+
+  // Índices de landmarks de MediaPipe Face Mesh (478 puntos)
+  const LEFT_EYEBROW_IDX = [276, 283, 282, 295, 285, 336, 296, 334, 293, 300];
+  const RIGHT_EYEBROW_IDX = [46, 53, 52, 65, 55, 107, 66, 105, 63, 70];
+  const LIPS_OUTER_IDX = [
+    61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291,
+    375, 321, 405, 314, 17, 84, 181, 91, 146
+  ];
+
+  function px(p) {
+    return { x: p.x * photoImg.naturalWidth, y: p.y * photoImg.naturalHeight };
+  }
+
+  function catmullRomSpline(points, pointsPerSegment = 20, closed = false) {
+    const n = points.length;
+    if (n < 3) return points.slice();
+    const getPoint = (i) => closed
+      ? points[(i + n) % n]
+      : points[Math.max(0, Math.min(n - 1, i))];
+
+    const result = [];
+    const segmentCount = closed ? n : n - 1;
+    for (let i = 0; i < segmentCount; i++) {
+      const p0 = getPoint(i - 1), p1 = getPoint(i), p2 = getPoint(i + 1), p3 = getPoint(i + 2);
+      for (let t = 0; t < pointsPerSegment; t++) {
+        const tt = t / pointsPerSegment;
+        const tt2 = tt * tt, tt3 = tt2 * tt;
+        const x = 0.5 * ((2 * p1.x) + (-p0.x + p2.x) * tt + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * tt2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * tt3);
+        const y = 0.5 * ((2 * p1.y) + (-p0.y + p2.y) * tt + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * tt2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * tt3);
+        result.push({ x, y });
+      }
+    }
+    if (!closed) result.push(points[n - 1]);
+    return result;
+  }
+
+  let faceMesh;
+  let faceMeshReady = false;
+  let computedRatios = null;
+  let faceShapeResult = null;
+  let lastCanvasSnapshot = null;
+  let lastLandmarks = null;
+  let idealModeActive = false;
+
   const imageInput = document.getElementById('imageInput');
   const statusEl = document.getElementById('status');
+  const errorBox = document.getElementById('errorBox');
+  const canvasContainer = document.getElementById('canvasContainer');
   const photoImg = document.getElementById('photoImg');
   const canvas = document.getElementById('outputCanvas');
   const ctx = canvas.getContext('2d');
+  const sliderDivider = document.getElementById('sliderDivider');
+  const sliderControlWrap = document.getElementById('sliderControlWrap');
+  const beforeAfterSlider = document.getElementById('beforeAfterSlider');
+  const sliderValueLabel = document.getElementById('sliderValueLabel');
+  const visagismToolsCard = document.getElementById('visagismToolsCard');
+  const toggleGuideLines = document.getElementById('toggleGuideLines');
 
-  let faceMesh;
+  let lastSliderPercent = 100;
 
-  function initApp() {
+  function setSliderReveal(percent) {
+    const clip = `inset(0 ${100 - percent}% 0 0)`;
+    canvas.style.clipPath = clip;
+    sliderDivider.style.left = percent + '%';
+    sliderValueLabel.innerText = percent + '%';
+    lastSliderPercent = percent;
+  }
+
+  beforeAfterSlider.addEventListener('input', (e) => {
+    setSliderReveal(Number(e.target.value));
+  });
+
+  const holdOriginalBtn = document.getElementById('holdOriginalBtn');
+  const showOriginalTemporarily = () => { canvas.style.clipPath = 'inset(0 100% 0 0)'; };
+  const restoreAfterView = () => setSliderReveal(lastSliderPercent);
+  holdOriginalBtn.addEventListener('mousedown', showOriginalTemporarily);
+  holdOriginalBtn.addEventListener('mouseup', restoreAfterView);
+  holdOriginalBtn.addEventListener('mouseleave', restoreAfterView);
+  holdOriginalBtn.addEventListener('touchstart', (e) => { e.preventDefault(); showOriginalTemporarily(); });
+  holdOriginalBtn.addEventListener('touchend', (e) => { e.preventDefault(); restoreAfterView(); });
+
+  toggleGuideLines.addEventListener('change', () => {
+    if (lastLandmarks) renderNormalOverlay(lastLandmarks);
+  });
+  const resultsCard = document.getElementById('resultsCard');
+  const historyCard = document.getElementById('historyCard');
+  const historyList = document.getElementById('historyList');
+
+  function showError(msg) {
+    errorBox.style.display = 'block';
+    errorBox.innerText = "⚠️ " + msg;
+  }
+  function clearError() {
+    errorBox.style.display = 'none';
+    errorBox.innerText = '';
+  }
+
+  let watchdogTimer = null;
+  function armWatchdog() {
+    clearTimeout(watchdogTimer);
+    watchdogTimer = setTimeout(() => {
+      showError("MediaPipe no respondió a tiempo. Prueba a desactivar bloqueadores de anuncios/rastreadores para esta página, o prueba en otro navegador.");
+      statusEl.innerText = "Sin respuesta del motor de IA.";
+      statusEl.style.color = "#FF3B30";
+    }, 12000);
+  }
+
+  try {
+    if (typeof FaceMesh === 'undefined') {
+      throw new Error("La librería FaceMesh no se cargó. Probablemente está siendo bloqueada por un bloqueador de anuncios/rastreadores, o no hay conexión.");
+    }
+    initFaceMesh();
+  } catch (err) {
+    statusEl.innerText = "Error al iniciar el motor.";
+    statusEl.style.color = "#FF3B30";
+    showError(err.message);
+  }
+
+  function initFaceMesh() {
     faceMesh = new FaceMesh({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
     });
-    faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5 });
-    faceMesh.onResults(onResults);
+    faceMesh.setOptions({
+      maxNumFaces: 1,
+      refineLandmarks: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
+    faceMesh.onResults((results) => {
+      clearTimeout(watchdogTimer);
+      try {
+        onFaceMeshResults(results);
+      } catch (err) {
+        statusEl.innerText = "Error al procesar los resultados.";
+        statusEl.style.color = "#FF3B30";
+        showError(err.message);
+      }
+    });
+    faceMeshReady = true;
+    statusEl.innerText = "Listo. Selecciona una foto.";
+    statusEl.style.color = "#34C759";
   }
 
   imageInput.addEventListener('change', (e) => {
+    clearError();
     if (!e.target.files[0]) return;
-    statusEl.innerText = "Procesando matriz facial...";
-    const url = URL.createObjectURL(e.target.files[0]);
-    photoImg.onload = async () => {
-      canvas.width = photoImg.naturalWidth;
-      canvas.height = photoImg.naturalHeight;
-      document.getElementById('canvasContainer').style.display = 'block';
-      await faceMesh.send({ image: photoImg });
-    };
-    photoImg.src = url;
-  });
+    const file = e.target.files[0];
 
-  function onResults(results) {
-    if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
-      statusEl.innerText = "No se detectó ningún rostro.";
+    if (!faceMeshReady) {
+      showError("El motor de IA todavía no ha terminado de cargar. Espera unos segundos y vuelve a intentarlo.");
       return;
     }
 
-    statusEl.innerText = "✓ Análisis biométrico completado";
-    document.getElementById('mainNav').style.display = 'flex';
-    
+    statusEl.innerText = "Leyendo imagen...";
+    statusEl.style.color = "#D97706";
+    const objectUrl = URL.createObjectURL(file);
+
+    photoImg.onerror = () => {
+      statusEl.innerText = "No se pudo leer la imagen.";
+      statusEl.style.color = "#FF3B30";
+      showError("El navegador no pudo decodificar el archivo. Prueba con otra foto en JPG o PNG.");
+    };
+
+    photoImg.onload = async () => {
+      try {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = photoImg.naturalWidth * dpr;
+        canvas.height = photoImg.naturalHeight * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, photoImg.naturalWidth, photoImg.naturalHeight);
+        canvasContainer.style.display = 'block';
+        statusEl.innerText = "Procesando imagen con MediaPipe...";
+        statusEl.style.color = "#D97706";
+        armWatchdog();
+        await faceMesh.send({ image: photoImg });
+      } catch (err) {
+        clearTimeout(watchdogTimer);
+        statusEl.innerText = "Error al enviar la imagen al motor.";
+        statusEl.style.color = "#FF3B30";
+        showError(err.message || String(err));
+      }
+    };
+    photoImg.src = objectUrl;
+  });
+
+  function onFaceMeshResults(results) {
+    if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
+      statusEl.innerText = "No se detectó ningún rostro. Intenta con otra foto.";
+      statusEl.style.color = "#FF3B30";
+      return;
+    }
+
     const lm = results.multiFaceLandmarks[0];
+    lastLandmarks = lm;
+    idealModeActive = false;
+    document.getElementById('idealBtn').innerText = "Ver Resultado Ideal";
+    sliderControlWrap.style.display = 'none';
+    sliderDivider.style.display = 'none';
+    visagismToolsCard.style.display = 'none';
+    canvas.style.clipPath = 'none';
 
-    // Cálculos Antropométricos
-    const top = dist(lm[10], lm[9]), mid = dist(lm[9], lm[2]), bot = dist(lm[2], lm[152]);
-    const total = top + mid + bot;
-    const pTop = ((top/total)*100).toFixed(1), pMid = ((mid/total)*100).toFixed(1), pBot = ((bot/total)*100).toFixed(1);
+    ctx.clearRect(0, 0, photoImg.naturalWidth, photoImg.naturalHeight);
 
-    document.getElementById('hudPoints').innerText = lm.length;
-    document.getElementById('hudInterocular').innerText = (dist(lm[33], lm[263]) / dist(lm[234], lm[454])).toFixed(2);
-    document.getElementById('hudJawRatio').innerText = (dist(lm[58], lm[288]) / dist(lm[234], lm[454])).toFixed(2);
-    document.getElementById('hudBrowAsym').innerText = (Math.abs(lm[70].y - lm[300].y) * photoImg.naturalHeight).toFixed(1) + " px";
+    const topForehead = lm[10];
+    const chinTip = lm[152];
+    const leftEyeOuter = lm[33];
+    const rightEyeOuter = lm[263];
+    const leftCheek = lm[234];
+    const rightCheek = lm[454];
+    const jawLeft = lm[58];
+    const jawRight = lm[288];
+    const eyebrowMid = lm[9];
+    const noseBase = lm[2];
+    const templeLeft = lm[71];
+    const templeRight = lm[301];
 
-    document.getElementById('pctTop').innerText = pTop + "%";
-    document.getElementById('fillTop').style.width = pTop + "%";
-    document.getElementById('pctMid').innerText = pMid + "%";
-    document.getElementById('fillMid').style.width = pMid + "%";
-    document.getElementById('pctBot').innerText = pBot + "%";
-    document.getElementById('fillBot').style.width = pBot + "%";
+    const dist = (p1, p2) => {
+      const a = px(p1), b = px(p2);
+      return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+    };
 
-    // Análisis de Piel Múltiple (Pómulo Izquierdo #117, Pómulo Derecho #346 y Nariz #4)
-    analyzeSkinRecalibrated(lm);
+    const upperThird = dist(topForehead, eyebrowMid);
+    const middleThird = dist(eyebrowMid, noseBase);
+    const lowerThird = dist(noseBase, chinTip);
+    const totalFaceHeight = dist(topForehead, chinTip);
 
-    // Activar Tab Principal
-    document.getElementById('tab-dashboard').style.display = 'block';
+    const faceWidthCheeks = dist(leftCheek, rightCheek);
+    const jawWidth = dist(jawLeft, jawRight);
+    const foreheadWidth = dist(templeLeft, templeRight);
+    const interocularDist = dist(leftEyeOuter, rightEyeOuter);
+
+    computedRatios = {
+      tercios_porcentaje: {
+        superior_frente: ((upperThird / (upperThird + middleThird + lowerThird)) * 100).toFixed(1) + "%",
+        medio_ojos_nariz: ((middleThird / (upperThird + middleThird + lowerThird)) * 100).toFixed(1) + "%",
+        inferior_mandibula_menton: ((lowerThird / (upperThird + middleThird + lowerThird)) * 100).toFixed(1) + "%"
+      },
+      ratios_estructura: {
+        ratio_ancho_alto_tercio_inferior: (lowerThird / faceWidthCheeks).toFixed(2),
+        ratio_mandibula_vs_pomulos: (jawWidth / faceWidthCheeks).toFixed(2),
+        ratio_frente_vs_pomulos: (foreheadWidth / faceWidthCheeks).toFixed(2),
+        ratio_largo_vs_ancho_cara: (totalFaceHeight / faceWidthCheeks).toFixed(2),
+        interocular_vs_ancho_cara: (interocularDist / faceWidthCheeks).toFixed(2)
+      },
+      puntos_analizados: 468
+    };
+
+    faceShapeResult = classifyFaceShape({
+      foreheadWidth, faceWidthCheeks, jawWidth, totalFaceHeight
+    });
+
+    if (toggleGuideLines.checked) {
+      drawVisagismGuideLines(lm, px);
+    }
+    drawThirdsLines(lm, px);
+
+    let precision = { totalPoints: 0, leftOffset: 0, rightOffset: 0 };
+    try {
+      precision = drawPrecisionMesh(lm, px);
+    } catch (err) {
+      console.warn("Módulo de precisión (splines) falló, se omite:", err);
+    }
+
+    computedRatios.puntos_analizados = lm.length;
+    computedRatios.modulo_precision = {
+      micropuntos_generados: precision.totalPoints,
+      ceja_izq_pico_natural_vs_guia_px: precision.leftOffset.toFixed(1),
+      ceja_der_pico_natural_vs_guia_px: precision.rightOffset.toFixed(1)
+    };
+
+    document.getElementById('shapePill').innerText = "Forma de cara estimada: " + faceShapeResult.shape;
+    document.getElementById('jsonOutput').innerText = JSON.stringify(computedRatios, null, 2);
+    document.getElementById('recBrows').innerHTML =
+      "<h3>Guía de cejas</h3><p>" + faceShapeResult.browAdvice + " En la imagen, los puntos <b>magenta</b> marcan el inicio, pico y final recomendados (técnica clásica de 3 puntos); la curva <b>verde neón</b> es tu contorno de ceja real densificado. Las líneas azules discontinuas marcan los tercios faciales (nacimiento del pelo, cejas, base de la nariz, barbilla). Es una guía de referencia, no una plantilla exacta.</p>";
+    document.getElementById('recHair').innerHTML =
+      "<h3>Corte de pelo / framing</h3><p>" + faceShapeResult.hairAdvice + "</p>";
+
+    const fmtOffset = (pxVal) => {
+      const abs = Math.abs(pxVal).toFixed(0);
+      if (abs < 3) return "prácticamente alineado con la guía";
+      return (pxVal > 0 ? "más hacia fuera" : "más hacia dentro") + " que la guía (~" + abs + "px)";
+    };
+    document.getElementById('precisionInfo').innerHTML =
+      "<h3>Módulo de precisión (splines)</h3><p>" +
+      "Se generaron <b>" + precision.totalPoints + " micropuntos</b> mediante interpolación Catmull-Rom sobre 478 landmarks base " +
+      "(verde neón = contorno denso de cejas, cian = contorno denso de labios). " +
+      "Tu pico natural de ceja izquierda está " + fmtOffset(precision.leftOffset) + "; " +
+      "el de la derecha está " + fmtOffset(precision.rightOffset) + ".</p>";
+
+    statusEl.innerText = "¡Análisis completado!";
+    statusEl.style.color = "#34C759";
+    resultsCard.style.display = 'block';
+    visagismToolsCard.style.display = 'block';
+    document.getElementById('aiGenCard').style.display = 'block';
+    document.getElementById('maskCard').style.display = 'block';
+    document.getElementById('moduleNav').style.display = 'block';
+    setActiveModule('cejas');
+    sliderControlWrap.style.display = 'block';
+    sliderDivider.style.display = 'block';
+    setSliderReveal(100);
+    lastCanvasSnapshot = composeSnapshot();
+
+    renderHistory();
+    historyCard.style.display = 'block';
   }
 
-  function analyzeSkinRecalibrated(lm) {
+  function composeSnapshot() {
+    const temp = document.createElement('canvas');
+    const maxDim = 200;
+    const scale = Math.min(1, maxDim / Math.max(photoImg.naturalWidth, photoImg.naturalHeight));
+    temp.width = photoImg.naturalWidth * scale;
+    temp.height = photoImg.naturalHeight * scale;
+    const tctx = temp.getContext('2d');
+    tctx.drawImage(photoImg, 0, 0, temp.width, temp.height);
+    tctx.drawImage(canvas, 0, 0, temp.width, temp.height);
+    return temp.toDataURL('image/jpeg', 0.7);
+  }
+
+  function drawPrecisionMesh(lm, px) {
+    const leftBrowPts = LEFT_EYEBROW_IDX.map(i => px(lm[i]));
+    const rightBrowPts = RIGHT_EYEBROW_IDX.map(i => px(lm[i]));
+    const lipsPts = LIPS_OUTER_IDX.map(i => px(lm[i]));
+
+    const leftBrowDense = catmullRomSpline(leftBrowPts, 60, true);
+    const rightBrowDense = catmullRomSpline(rightBrowPts, 60, true);
+    const lipsDense = catmullRomSpline(lipsPts, 50, true);
+
+    ctx.save();
+
+    ctx.strokeStyle = "#00FF88";
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = "#00FF88";
+    ctx.lineWidth = 2;
+    [leftBrowPts, rightBrowPts].forEach((pts) => {
+      ctx.beginPath();
+      tracePathSmooth(pts, true);
+      ctx.stroke();
+    });
+
+    const lipsCenterX = lipsPts.reduce((s, p) => s + p.x, 0) / lipsPts.length;
+    const lipsMinY = Math.min(...lipsPts.map(p => p.y));
+    const lipsMaxY = Math.max(...lipsPts.map(p => p.y));
+    ctx.beginPath();
+    tracePathSmooth(lipsPts, true);
+    ctx.strokeStyle = "#00E5FF";
+    ctx.shadowColor = "#00E5FF";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    const lipsGradient = ctx.createLinearGradient(lipsCenterX, lipsMinY, lipsCenterX, lipsMaxY);
+    lipsGradient.addColorStop(0, 'rgba(0,229,255,0.06)');
+    lipsGradient.addColorStop(0.5, 'rgba(0,229,255,0.14)');
+    lipsGradient.addColorStop(1, 'rgba(0,229,255,0.06)');
+    ctx.fillStyle = lipsGradient;
+    ctx.fill();
+
+    ctx.restore();
+
+    const getHighestPt = (pts) => pts.reduce((best, p) => p.y < best.y ? p : best, pts[0]);
+    const leftPeakNatural = getHighestPt(leftBrowDense);
+    const rightPeakNatural = getHighestPt(rightBrowDense);
+
+    const nostrilLeft = px(lm[129]), nostrilRight = px(lm[358]);
+    const irisLeft = px(lm[468]), irisRight = px(lm[473]);
+    const leftPeakGuideX = irisLeft.x + (irisLeft.x - nostrilLeft.x) * 0.3;
+    const rightPeakGuideX = irisRight.x - (nostrilRight.x - irisRight.x) * 0.3;
+
+    return {
+      totalPoints: leftBrowDense.length + rightBrowDense.length + lipsDense.length,
+      leftOffset: leftPeakNatural.x - leftPeakGuideX,
+      rightOffset: rightPeakNatural.x - rightPeakGuideX
+    };
+  }
+
+  function tracePathSmooth(pts, closed = false) {
+    if (pts.length < 2) return;
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 0; i < pts.length - (closed ? 0 : 1); i++) {
+      const p0 = pts[i];
+      const p1 = pts[(i + 1) % pts.length];
+      const midX = (p0.x + p1.x) / 2;
+      const midY = (p0.y + p1.y) / 2;
+      ctx.quadraticCurveTo(p0.x, p0.y, midX, midY);
+    }
+  }
+
+  function drawThirdsLines(lm, px) {
+    const yTop = px(lm[10]).y;
+    const yBrow = px(lm[9]).y;
+    const yNose = px(lm[2]).y;
+    const yChin = px(lm[152]).y;
+    const w = photoImg.naturalWidth;
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(0, 113, 227, 0.65)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 4]);
+
+    [yTop, yBrow, yNose, yChin].forEach((y) => {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  function drawVisagismGuideLines(lm, px) {
+    const nostrilLeft = px(lm[129]), nostrilRight = px(lm[358]);
+    const eyeInnerLeft = px(lm[133]), eyeInnerRight = px(lm[362]);
+    const eyeOuterLeft = px(lm[33]), eyeOuterRight = px(lm[263]);
+    const irisLeft = px(lm[468]), irisRight = px(lm[473]);
+    const browHeightLeft = px(lm[105]).y, browHeightRight = px(lm[334]).y;
+
+    const leftStart = { x: eyeInnerLeft.x, y: browHeightLeft };
+    const leftPeak = { x: irisLeft.x + (irisLeft.x - nostrilLeft.x) * 0.3, y: browHeightLeft - 12 };
+    const leftEnd = { x: eyeOuterLeft.x + (eyeOuterLeft.x - nostrilLeft.x) * 0.4, y: browHeightLeft + 8 };
+
+    const rightStart = { x: eyeInnerRight.x, y: browHeightRight };
+    const rightPeak = { x: irisRight.x - (nostrilRight.x - irisRight.x) * 0.3, y: browHeightRight - 12 };
+    const rightEnd = { x: eyeOuterRight.x - (nostrilRight.x - eyeOuterRight.x) * 0.4, y: browHeightRight + 8 };
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+
+    const drawRay = (from, through) => {
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      const dx = through.x - from.x, dy = through.y - from.y;
+      ctx.lineTo(from.x + dx * 2, from.y + dy * 2);
+      ctx.stroke();
+    };
+
+    drawRay(nostrilLeft, eyeInnerLeft);
+    drawRay(nostrilLeft, irisLeft);
+    drawRay(nostrilLeft, eyeOuterLeft);
+
+    drawRay(nostrilRight, eyeInnerRight);
+    drawRay(nostrilRight, irisRight);
+    drawRay(nostrilRight, eyeOuterRight);
+    ctx.restore();
+
+    ctx.save();
+    [leftStart, leftPeak, leftEnd, rightStart, rightPeak, rightEnd].forEach((pt) => {
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = "#FF007A";
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = "#FF007A";
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  function classifyFaceShape({ foreheadWidth, faceWidthCheeks, jawWidth, totalFaceHeight }) {
+    const ratioLengthWidth = totalFaceHeight / faceWidthCheeks;
+    const ratioJawCheek = jawWidth / faceWidthCheeks;
+    const ratioForeheadCheek = foreheadWidth / faceWidthCheeks;
+
+    if (ratioLengthWidth > 1.45) {
+      return {
+        shape: "Alargada / Ovalada larga",
+        browAdvice: "Cejas bastante rectas o ligeramente horizontales para acortar visualmente el rostro.",
+        hairAdvice: "Cortes con volumen lateral, flequillo recto o de cortina."
+      };
+    }
+    if (ratioJawCheek > 0.88 && ratioForeheadCheek > 0.88) {
+      return {
+        shape: "Cuadrada",
+        browAdvice: "Cejas angulosas y marcadas con suave arco para suavizar la línea de la mandíbula.",
+        hairAdvice: "Capas desfiladas alrededor del rostro, ondas suaves."
+      };
+    }
+    if (ratioForeheadCheek > 0.95 && ratioJawCheek < 0.75) {
+      return {
+        shape: "Corazón / Triángulo invertido",
+        browAdvice: "Cejas redondeadas y suaves para quitar dureza a la frente.",
+        hairAdvice: "Cortes bob a la barbilla, volumen en la zona inferior."
+      };
+    }
+    if (ratioLengthWidth < 1.25) {
+      return {
+        shape: "Redonda",
+        browAdvice: "Cejas con arco elevado y angulado para estilizar la verticalidad del rostro.",
+        hairAdvice: "Volumen superior, cortes asimétricos o desfilados largos."
+      };
+    }
+    return {
+      shape: "Ovalada equilibrada",
+      browAdvice: "Cualquier diseño armónico; un arco suave o clásico resaltará la simetría natural.",
+      hairAdvice: "Prácticamente cualquier corte o peinado le favorece."
+    };
+  }
+
+  // Lógica de pestañas y módulos
+  function setActiveModule(modName) {
+    document.querySelectorAll('#moduleNav .module-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.module === modName);
+    });
+    document.getElementById('visagismToolsCard').style.display = (modName === 'cejas') ? 'block' : 'none';
+    document.getElementById('guaShaCard').style.display = (modName === 'guasha') ? 'block' : 'none';
+    document.getElementById('pielCard').style.display = (modName === 'piel') ? 'block' : 'none';
+
+    if (modName === 'guasha' && lastLandmarks) drawGuaShaVectors(lastLandmarks);
+    if (modName === 'piel' && lastLandmarks) analyzeSkinModule(lastLandmarks);
+    if (modName === 'cejas' && lastLandmarks) renderNormalOverlay(lastLandmarks);
+  }
+
+  document.querySelectorAll('#moduleNav .module-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!btn.disabled) setActiveModule(btn.dataset.module);
+    });
+  });
+
+  function renderNormalOverlay(lm) {
+    ctx.clearRect(0, 0, photoImg.naturalWidth, photoImg.naturalHeight);
+    if (toggleGuideLines.checked) drawVisagismGuideLines(lm, px);
+    drawThirdsLines(lm, px);
+    drawPrecisionMesh(lm, px);
+  }
+
+  function drawGuaShaVectors(lm) {
+    ctx.clearRect(0, 0, photoImg.naturalWidth, photoImg.naturalHeight);
+    ctx.save();
+    ctx.strokeStyle = "#34C759";
+    ctx.fillStyle = "#34C759";
+    ctx.lineWidth = 3;
+
+    const drawArrow = (from, to) => {
+      const p1 = px(from), p2 = px(to);
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+
+      const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+      const headLen = 10;
+      ctx.beginPath();
+      ctx.moveTo(p2.x, p2.y);
+      ctx.lineTo(p2.x - headLen * Math.cos(angle - Math.PI / 6), p2.y - headLen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(p2.x - headLen * Math.cos(angle + Math.PI / 6), p2.y - headLen * Math.sin(angle + Math.PI / 6));
+      ctx.fill();
+    };
+
+    drawArrow(lm[152], lm[234]);
+    drawArrow(lm[152], lm[454]);
+    drawArrow(lm[61], lm[127]);
+    drawArrow(lm[291], lm[356]);
+    drawArrow(lm[9], lm[10]);
+
+    ctx.restore();
+  }
+
+  function analyzeSkinModule(lm) {
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = photoImg.naturalWidth;
     tempCanvas.height = photoImg.naturalHeight;
     const tempCtx = tempCanvas.getContext('2d');
     tempCtx.drawImage(photoImg, 0, 0);
 
-    // Muestreamos 3 puntos clave: Pómulo izq (117), Pómulo der (346) y zona nasal (4)
-    const points = [lm[117], lm[346], lm[4]];
+    const points = [lm[117], lm[346], lm[10], lm[152]];
     let rSum = 0, gSum = 0, bSum = 0;
 
     points.forEach(pt => {
-      const cx = Math.floor(pt.x * photoImg.naturalWidth);
-      const cy = Math.floor(pt.y * photoImg.naturalHeight);
-      const data = tempCtx.getImageData(cx, cy, 8, 8).data;
+      const p = px(pt);
+      const data = tempCtx.getImageData(Math.floor(p.x), Math.floor(p.y), 5, 5).data;
       for (let i = 0; i < data.length; i += 4) {
         rSum += data[i];
         gSum += data[i+1];
@@ -413,46 +938,218 @@
       }
     });
 
-    const totalPixels = points.length * 64;
-    const r = Math.round(rSum / totalPixels);
-    const g = Math.round(gSum / totalPixels);
-    const b = Math.round(bSum / totalPixels);
+    const count = points.length * 25;
+    const r = Math.round(rSum / count);
+    const g = Math.round(gSum / count);
+    const b = Math.round(bSum / count);
 
-    // Cálculo del parámetro a* de CIELAB (Eje Verde-Rojo)
-    const redRatio = (r / (g + 1));
-    const chromaRed = (r - g) + (r - b)*0.5;
+    document.getElementById('pielPill').innerText = `Tono promedio detectado: RGB(${r}, ${g}, ${b})`;
+    document.getElementById('pielSwatches').innerHTML = `<div style="width:40px; height:40px; border-radius:10px; background:rgb(${r},${g},${b}); border:2px solid #FFF; box-shadow:0 2px 8px rgba(0,0,0,0.15);"></div>`;
 
-    document.getElementById('swatchEl').style.backgroundColor = `rgb(${r},${g},${b})`;
-    const erythemaEl = document.getElementById('hudErythema');
-    const recEl = document.getElementById('pielRecommendations');
-
-    // Umbral recalibrado para pieles con tendencia a eritema/rosácea
-    if (redRatio > 1.18 || chromaRed > 22) {
-      erythemaEl.innerText = "Marcado / Reactivo";
-      erythemaEl.style.color = 'var(--accent-red)';
-      recEl.innerHTML = "<strong>• Diagnóstico:</strong> Se detecta un nivel elevado de eritema y vascularización superficial en zona central y pómulos.<br><br><strong>• Pauta Recomendada:</strong> Niacinamida al 5%, Ácido Azelaico (10%), extracto de Centella Asiática y fotoprotección mineral fluida. Evitar exfoliantes mecánicos o con alto contenido de alcohol.";
-    } else {
-      erythemaEl.innerText = "Bajo / Moderado";
-      erythemaEl.style.color = 'var(--accent-green)';
-      recEl.innerHTML = "<strong>• Diagnóstico:</strong> Tono con niveles estables de hemoglobina superficial.<br><br><strong>• Pauta Recomendada:</strong> Mantener rutina hidratante con Ácido Hialurónico, antioxidantes (Vitamina C) por la mañana y protección solar diaria.";
+    const redDominance = r / ((g + b) / 2 || 1);
+    let recText = "<strong>Mantenimiento recomendado:</strong> Hidratación equilibrada, Ácido Hialurónico y protección solar diaria SPF50.";
+    if (redDominance > 1.15 || (r - g) > 25) {
+      recText = "<strong>Ligeras rojeces / Sensibilidad detectada:</strong> Se recomiendan ingredientes calmantes como Niacinamida, Centella Asiática y Ácido Azelaico. Evitar exfoliantes agresivos.";
     }
+
+    document.getElementById('pielRec').innerHTML = "<h3>Sugerencias Dermocosméticas</h3><p>" + recText + "</p>";
   }
 
-  function dist(p1, p2) {
-    const dx = (p1.x - p2.x) * photoImg.naturalWidth;
-    const dy = (p1.y - p2.y) * photoImg.naturalHeight;
-    return Math.sqrt(dx*dx + dy*dy);
+  // Historial Local
+  function saveToHistory() {
+    if (!computedRatios || !faceShapeResult) return;
+    const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const newItem = {
+      id: Date.now(),
+      date: new Date().toLocaleString('es-ES'),
+      shape: faceShapeResult.shape,
+      snapshot: lastCanvasSnapshot,
+      ratios: computedRatios
+    };
+    history.unshift(newItem);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(0, 10)));
+    renderHistory();
+    alert("¡Análisis guardado en tu historial local!");
   }
 
-  function switchTab(tabName, btn) {
-    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.segment-btn').forEach(el => el.classList.remove('active'));
-    
-    document.getElementById('tab-' + tabName).style.display = 'block';
-    btn.classList.add('active');
+  function renderHistory() {
+    const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    if (history.length === 0) {
+      historyList.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>No hay análisis guardados aún.</p>";
+      return;
+    }
+    historyList.innerHTML = history.map(item => `
+      <div class="history-item">
+        <div style="display:flex; align-items:center; gap:12px;">
+          ${item.snapshot ? `<img src="${item.snapshot}" style="width:48px; height:48px; border-radius:10px; object-fit:cover;" />` : ''}
+          <div>
+            <strong>${item.shape}</strong>
+            <div class="history-meta">${item.date}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
   }
 
-  window.onload = initApp;
+  document.getElementById('saveBtn').addEventListener('click', saveToHistory);
+  document.getElementById('clearHistoryBtn').addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    renderHistory();
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    if (!computedRatios) return;
+    navigator.clipboard.writeText(JSON.stringify(computedRatios, null, 2));
+    alert("JSON copiado al portapapeles");
+  });
+
+  // Resultado Ideal Nativo (Canvas)
+  document.getElementById('idealBtn').addEventListener('click', () => {
+    if (!lastLandmarks) return;
+    idealModeActive = !idealModeActive;
+
+    if (idealModeActive) {
+      document.getElementById('idealBtn').innerText = "Volver a Vista Normal";
+      renderIdealView(lastLandmarks);
+    } else {
+      document.getElementById('idealBtn').innerText = "Ver Resultado Ideal";
+      renderNormalOverlay(lastLandmarks);
+    }
+  });
+
+  function renderIdealView(lm) {
+    ctx.clearRect(0, 0, photoImg.naturalWidth, photoImg.naturalHeight);
+
+    // Espejado/simulación suave
+    const nostrilLeft = px(lm[129]), nostrilRight = px(lm[358]);
+    const irisLeft = px(lm[468]), irisRight = px(lm[473]);
+    const eyeInnerLeft = px(lm[133]), eyeInnerRight = px(lm[362]);
+    const eyeOuterLeft = px(lm[33]), eyeOuterRight = px(lm[263]);
+    const browHeightLeft = px(lm[105]).y, browHeightRight = px(lm[334]).y;
+
+    const leftStart = { x: eyeInnerLeft.x, y: browHeightLeft };
+    const leftPeak = { x: irisLeft.x + (irisLeft.x - nostrilLeft.x) * 0.3, y: browHeightLeft - 12 };
+    const leftEnd = { x: eyeOuterLeft.x + (eyeOuterLeft.x - nostrilLeft.x) * 0.4, y: browHeightLeft + 8 };
+
+    const rightStart = { x: eyeInnerRight.x, y: browHeightRight };
+    const rightPeak = { x: irisRight.x - (nostrilRight.x - irisRight.x) * 0.3, y: browHeightRight - 12 };
+    const rightEnd = { x: eyeOuterRight.x - (nostrilRight.x - eyeOuterRight.x) * 0.4, y: browHeightRight + 8 };
+
+    ctx.save();
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.lineWidth = 4;
+    ctx.shadowBlur = 4;
+    ctx.shadowColor = "#000000";
+
+    [ [leftStart, leftPeak, leftEnd], [rightStart, rightPeak, rightEnd] ].forEach(pts => {
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      ctx.quadraticCurveTo(pts[1].x, pts[1].y, pts[2].x, pts[2].y);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  // Generador de Máscara Inpainting (Capa 2)
+  document.getElementById('genMaskBtn').addEventListener('click', () => {
+    if (!lastLandmarks) return;
+    const maskCanvas = document.createElement('canvas');
+    maskCanvas.width = photoImg.naturalWidth;
+    maskCanvas.height = photoImg.naturalHeight;
+    const mctx = maskCanvas.getContext('2d');
+
+    mctx.fillStyle = "#000000";
+    mctx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+
+    mctx.fillStyle = "#FFFFFF";
+    mctx.filter = "blur(12px)";
+
+    const leftPts = LEFT_EYEBROW_IDX.map(i => px(lastLandmarks[i]));
+    const rightPts = RIGHT_EYEBROW_IDX.map(i => px(lastLandmarks[i]));
+
+    [leftPts, rightPts].forEach(pts => {
+      mctx.beginPath();
+      pts.forEach((p, idx) => {
+        if (idx === 0) mctx.moveTo(p.x, p.y);
+        else mctx.lineTo(p.x, p.y);
+      });
+      mctx.closePath();
+      mctx.fill();
+    });
+
+    const dataUrl = maskCanvas.toDataURL('image/png');
+    document.getElementById('maskPreviewImg').src = dataUrl;
+    document.getElementById('maskDownloadLink').href = dataUrl;
+    document.getElementById('maskPreviewWrap').style.display = 'block';
+  });
+
+  // Generación IA (Gemini API)
+  document.getElementById('aiGenBtn').addEventListener('click', async () => {
+    const apiKey = document.getElementById('googleApiKey').value.trim();
+    const statusBox = document.getElementById('aiGenStatus');
+    const errBox = document.getElementById('aiGenErrorBox');
+
+    errBox.style.display = 'none';
+    if (!apiKey) {
+      errBox.style.display = 'block';
+      errBox.innerText = "⚠️ Introduce tu clave API de Google AI Studio.";
+      return;
+    }
+
+    statusBox.style.display = 'block';
+    statusBox.innerText = "Conectando con Gemini 2.5 Flash Image...";
+
+    try {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = photoImg.naturalWidth;
+      tempCanvas.height = photoImg.naturalHeight;
+      const tctx = tempCanvas.getContext('2d');
+      tctx.drawImage(photoImg, 0, 0);
+      const base64Img = tempCanvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+
+      const promptText = "Enhance the eyebrows symmetry and shape naturally to match visagism recommendations, keep exact facial features and skin identity intact.";
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: promptText },
+              { inline_data: { mime_type: "image/jpeg", data: base64Img } }
+            ]
+          }]
+        })
+      });
+
+      const resData = await response.json();
+      if (resData.error) throw new Error(resData.error.message || "Error devuelto por Gemini API.");
+
+      const candidates = resData.candidates;
+      if (candidates && candidates[0] && candidates[0].content && candidates[0].content.parts) {
+        const imgPart = candidates[0].content.parts.find(p => p.inline_data);
+        if (imgPart) {
+          const resultUrl = `data:${imgPart.inline_data.mime_type};base64,${imgPart.inline_data.data}`;
+          document.getElementById('aiGenResultImg').src = resultUrl;
+          document.getElementById('aiGenDownloadLink').href = resultUrl;
+          document.getElementById('aiGenResultWrap').style.display = 'block';
+          statusBox.innerText = "¡Imagen generada con éxito!";
+        } else {
+          throw new Error("La API no devolvió una imagen en la respuesta.");
+        }
+      } else {
+        throw new Error("Respuesta no válida de la API de Google.");
+      }
+    } catch (err) {
+      statusBox.style.display = 'none';
+      errBox.style.display = 'block';
+      errBox.innerText = "⚠️ " + err.message;
+    }
+  });
+
+  window.onload = () => {
+    renderHistory();
+  };
 </script>
 </body>
 </html>

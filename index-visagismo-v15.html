@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Laboratorio de Visagismo Facial (v15 - ceja con grosor real + módulo de piel)</title>
+  <title>Laboratorio de Visagismo Facial (v16 - fix: orden natural de puntos de ceja)</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
@@ -562,29 +562,31 @@
   // y calcula el "pico natural" de cada ceja (el punto más alto de la curva real)
   // comparado con el pico recomendado por la guía de 3 puntos (basada en el iris).
   function drawPrecisionMesh(lm, px) {
-    const leftBrowPts = LEFT_EYEBROW_IDX.map(i => px(lm[i])).sort((a, b) => a.x - b.x);
-    const rightBrowPts = RIGHT_EYEBROW_IDX.map(i => px(lm[i])).sort((a, b) => a.x - b.x);
+    // Orden natural de MediaPipe (contorno cerrado superior+inferior de la
+    // ceja) — NO se reordena por X, eso rompía la forma (ver nota más abajo).
+    const leftBrowPts = LEFT_EYEBROW_IDX.map(i => px(lm[i]));
+    const rightBrowPts = RIGHT_EYEBROW_IDX.map(i => px(lm[i]));
     const lipsPts = LIPS_OUTER_IDX.map(i => px(lm[i]));
 
     // El cálculo denso (Catmull-Rom) se conserva para el análisis interno (detectar
-    // el pico natural de la ceja, contar micropuntos), pero el TRAZO visible ya no
-    // se dibuja uniendo esos cientos de puntos con líneas rectas (eso es lo que
-    // producía el efecto zigzag). Para el trazo se usa una curva suave continua
-    // (Bézier cuadrática) directamente sobre los puntos de control reales.
-    const leftBrowDense = catmullRomSpline(leftBrowPts, 60, false);
-    const rightBrowDense = catmullRomSpline(rightBrowPts, 60, false);
+    // el pico natural de la ceja, contar micropuntos). Antes se calculaba sobre
+    // los puntos ordenados por X, lo cual daba una curva inválida — ahora usa el
+    // mismo orden natural cerrado que el trazo visible.
+    const leftBrowDense = catmullRomSpline(leftBrowPts, 60, true);
+    const rightBrowDense = catmullRomSpline(rightBrowPts, 60, true);
     const lipsDense = catmullRomSpline(lipsPts, 50, true);
 
     ctx.save();
 
-    // Cejas: curva única y fluida en verde neón, fina, con resplandor sutil
+    // Cejas: contorno cerrado y fluido en verde neón, fino, con resplandor sutil
+    // — sigue la forma real (superior + inferior) detectada por MediaPipe.
     ctx.strokeStyle = "#00FF88";
     ctx.shadowBlur = 8;
     ctx.shadowColor = "#00FF88";
     ctx.lineWidth = 2;
     [leftBrowPts, rightBrowPts].forEach((pts) => {
       ctx.beginPath();
-      tracePathSmooth(pts, false);
+      tracePathSmooth(pts, true);
       ctx.stroke();
     });
 
@@ -851,50 +853,17 @@
     const sides = [LEFT_EYEBROW_IDX, RIGHT_EYEBROW_IDX];
 
     sides.forEach((browIdx) => {
-      const browPts = browIdx.map((i) => px(lm[i])).sort((a, b) => a.x - b.x);
-      // Curva densa y suave (misma técnica Catmull-Rom que el resto de la app)
-      // sobre los puntos REALES de tu ceja — esta es la silueta base, no una
-      // línea recta ni una plantilla genérica.
-      const dense = catmullRomSpline(browPts, 30, false);
-      const n = dense.length;
-
-      const browSpan = browPts[browPts.length - 1].x - browPts[0].x;
-      const maxThickness = Math.max(6, browSpan * 0.22);
-
-      // Perfil de grosor típico de una ceja: se ensancha rápido al principio,
-      // mantiene el cuerpo grueso en el tramo central, y se afina hacia la cola.
-      function thicknessAt(t) {
-        if (t < 0.15) return maxThickness * (0.35 + 0.65 * (t / 0.15));
-        if (t > 0.65) return maxThickness * (1 - 0.75 * ((t - 0.65) / 0.35));
-        return maxThickness;
-      }
-
-      // Genera el borde superior e inferior desplazando cada punto de la curva
-      // perpendicularmente a su dirección, según el grosor en ese punto —
-      // así se construye una silueta con grosor variable a partir de una línea.
-      const topEdge = [], bottomEdge = [];
-      for (let i = 0; i < n; i++) {
-        const t = i / (n - 1);
-        const p = dense[i];
-        const prev = dense[Math.max(0, i - 1)];
-        const next = dense[Math.min(n - 1, i + 1)];
-        const dx = next.x - prev.x, dy = next.y - prev.y;
-        const len = Math.hypot(dx, dy) || 1;
-        const nx = -dy / len, ny = dx / len; // normal unitario a la curva
-        const half = thicknessAt(t) / 2;
-        topEdge.push({ x: p.x + nx * half, y: p.y + ny * half });
-        bottomEdge.push({ x: p.x - nx * half, y: p.y - ny * half });
-      }
+      // IMPORTANTE: estos 10 índices ya vienen en el orden correcto de MediaPipe
+      // para trazar el contorno cerrado de la ceja (borde superior + borde
+      // inferior). NO se reordenan por X — hacerlo mezcla puntos de arriba y de
+      // abajo sin sentido geométrico, que es justo lo que causaba el "borrón".
+      const browPts = browIdx.map((i) => px(lm[i]));
 
       // Silueta rellena, con halo blanco + contorno negro para verse nítida
-      // sobre cualquier tono de piel o pelo (misma lógica de contraste de antes,
-      // ahora aplicada a una forma real, no a una línea).
+      // sobre cualquier tono de piel o pelo.
       ctx.save();
       ctx.beginPath();
-      ctx.moveTo(topEdge[0].x, topEdge[0].y);
-      topEdge.forEach((p) => ctx.lineTo(p.x, p.y));
-      for (let i = bottomEdge.length - 1; i >= 0; i--) ctx.lineTo(bottomEdge[i].x, bottomEdge[i].y);
-      ctx.closePath();
+      tracePathSmooth(browPts, true); // contorno cerrado y suave, tal cual lo detectó MediaPipe
 
       ctx.lineWidth = 5;
       ctx.strokeStyle = "#FFFFFF";
@@ -1384,4 +1353,5 @@
 </script>
 
 </body>
+</html>
 </html>

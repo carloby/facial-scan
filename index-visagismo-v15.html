@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Laboratorio de Visagismo Facial (v16 - fix: orden natural de puntos de ceja)</title>
+  <title>Laboratorio de Visagismo Facial (v18 - máscara de inpainting real, capa 2 del pipeline)</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
@@ -130,6 +130,26 @@
       mentón) — no es una detección clínica ni un diagnóstico dermatológico, depende bastante de la
       luz con la que se hizo la foto. Es una referencia orientativa para elegir ingredientes/rutina,
       no sustituye a un dermatólogo.
+    </p>
+  </div>
+
+  <div id="maskCard" class="card" style="display:none;">
+    <h2>Máscara de corrección (Capa 2 — gratis, sin IA)</h2>
+    <p style="font-size:0.9rem; color:#3a3a3c; margin-top:0;">
+      Genera la máscara de inpainting: blanco = zona a corregir (cejas), negro = todo lo que debe
+      permanecer intacto (piel, luz, fondo, identidad). Es el archivo que le pasarías a un servicio
+      de ControlNet + SDXL inpainting (ej. Replicate) junto con tu foto original.
+    </p>
+    <button id="genMaskBtn" class="full secondary">Generar máscara de cejas</button>
+    <div id="maskPreviewWrap" style="display:none; margin-top:12px;">
+      <img id="maskPreviewImg" style="width:100%; border-radius:12px; border:1px solid #d2d2d7; background:#000;" />
+      <a id="maskDownloadLink" download="mascara-cejas.png" class="full" style="display:block; text-align:center; margin-top:8px; background:#e5e5e7; color:#1d1d1f; padding:12px; border-radius:10px; text-decoration:none; font-weight:600;">Descargar máscara (PNG)</a>
+    </div>
+    <p class="disclaimer">
+      Esta máscara por sí sola no genera nada — es el "dónde" para un modelo generativo real
+      (ControlNet + SDXL inpainting), que necesitaría ejecutarse en un servicio con GPU (Replicate,
+      Stability AI...), no algo gratuito con Canvas. Aun así, tenerla lista ahora te ahorra ese paso
+      el día que decidas conectar ese servicio.
     </p>
   </div>
 
@@ -533,6 +553,7 @@
     resultsCard.style.display = 'block';
     visagismToolsCard.style.display = 'block';
     document.getElementById('aiGenCard').style.display = 'block';
+    document.getElementById('maskCard').style.display = 'block';
     document.getElementById('moduleNav').style.display = 'block';
     setActiveModule('cejas');
     sliderControlWrap.style.display = 'block';
@@ -853,25 +874,17 @@
     const sides = [LEFT_EYEBROW_IDX, RIGHT_EYEBROW_IDX];
 
     sides.forEach((browIdx) => {
-      // IMPORTANTE: estos 10 índices ya vienen en el orden correcto de MediaPipe
-      // para trazar el contorno cerrado de la ceja (borde superior + borde
-      // inferior). NO se reordenan por X — hacerlo mezcla puntos de arriba y de
-      // abajo sin sentido geométrico, que es justo lo que causaba el "borrón".
+      // Orden natural de MediaPipe (contorno cerrado real de la ceja) — sin
+      // reordenar por X, sin relleno: solo el trazo.
       const browPts = browIdx.map((i) => px(lm[i]));
 
-      // Silueta rellena, con halo blanco + contorno negro para verse nítida
-      // sobre cualquier tono de piel o pelo.
       ctx.save();
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = "#0047FF";
+      ctx.strokeStyle = "#0047FF"; // azul eléctrico
+      ctx.lineWidth = 3; // mínimo 2px, con margen para que se vea bien nítido
       ctx.beginPath();
-      tracePathSmooth(browPts, true); // contorno cerrado y suave, tal cual lo detectó MediaPipe
-
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = "#FFFFFF";
-      ctx.stroke();
-      ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-      ctx.fill();
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = "#000000";
+      tracePathSmooth(browPts, true);
       ctx.stroke();
       ctx.restore();
     });
@@ -1228,6 +1241,51 @@
     document.getElementById('pielRec').innerHTML = "<h3>Recomendación orientativa</h3><p>" + recText + "</p>";
   }
 
+  // --- Máscara de corrección (Capa 2 del pipeline: extracción → máscara → inpainting) ---
+  // Genera una imagen blanco/negro: blanco = zona a corregir (cejas, con margen),
+  // negro = todo lo demás (debe permanecer intacto). Este es el formato estándar
+  // que espera un pipeline de inpainting condicionado (ControlNet + SDXL): la
+  // foto original + esta máscara + un modelo con GPU real generan el resultado
+  // final — la máscara en sí no dibuja nada, solo delimita "dónde".
+  function generateBrowMask(lm) {
+    const temp = document.createElement('canvas');
+    temp.width = photoImg.naturalWidth;
+    temp.height = photoImg.naturalHeight;
+    const mctx = temp.getContext('2d');
+    mctx.fillStyle = "#000000";
+    mctx.fillRect(0, 0, temp.width, temp.height);
+    mctx.fillStyle = "#FFFFFF";
+
+    [LEFT_EYEBROW_IDX, RIGHT_EYEBROW_IDX].forEach((browIdx) => {
+      const pts = browIdx.map((i) => px(lm[i]));
+      const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+      const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+      // Se expande el polígono natural (no solo el contorno exacto de la ceja)
+      // para dar margen de trabajo real al modelo de inpainting.
+      const expanded = pts.map((p) => ({
+        x: cx + (p.x - cx) * 1.6,
+        y: cy + (p.y - cy) * 1.9
+      }));
+      mctx.beginPath();
+      expanded.forEach((p, i) => (i === 0 ? mctx.moveTo(p.x, p.y) : mctx.lineTo(p.x, p.y)));
+      mctx.closePath();
+      mctx.fill();
+    });
+
+    return temp.toDataURL('image/png');
+  }
+
+  document.getElementById('genMaskBtn').addEventListener('click', () => {
+    if (!lastLandmarks) {
+      alert("Primero escanea una foto.");
+      return;
+    }
+    const maskDataUrl = generateBrowMask(lastLandmarks);
+    document.getElementById('maskPreviewImg').src = maskDataUrl;
+    document.getElementById('maskDownloadLink').href = maskDataUrl;
+    document.getElementById('maskPreviewWrap').style.display = 'block';
+  });
+
   // --- Vista Ideal generada por IA (Gemini 2.5 Flash Image / "Nano Banana") ---
   const aiGenBtn = document.getElementById('aiGenBtn');
   const aiGenStatus = document.getElementById('aiGenStatus');
@@ -1353,5 +1411,4 @@
 </script>
 
 </body>
-</html>
 </html>

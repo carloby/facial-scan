@@ -275,6 +275,7 @@
     <button class="module-btn" data-module="laxitud">Vectores de Tensado &amp; Laxitud</button>
     <button class="module-btn" data-module="guasha">Protocolo Drenaje Linfático</button>
     <button class="module-btn" data-module="color">Colorimetría &amp; Paleta</button>
+    <button class="module-btn" data-module="rutina">Rutina &amp; Tratamientos</button>
   </div>
 
   <div class="card" id="dashboardCard" style="display:none;">
@@ -386,6 +387,31 @@
       Paleta recomendada — toca un color para probarlo como marco
     </h3>
     <div class="swatch-group" id="paletteSwatches"></div>
+  </div>
+
+  <div id="rutinaCard" class="card" style="display:none;">
+    <h2>Rutina &amp; Tratamientos No Quirúrgicos</h2>
+    <p style="font-size: 0.85rem; color: var(--text-sub); margin-top: -6px;">
+      Contenido informativo basado en el análisis de esta foto — no es una prescripción médica ni
+      dermatológica. Cualquier tratamiento con aguja, láser, o toxina debe valorarlo y realizarlo un
+      profesional médico colegiado.
+    </p>
+
+    <div class="plan-grid" style="margin-top:18px;">
+      <div class="plan-card">
+        <h3>Rutina de Mañana (AM)</h3>
+        <div id="routineAM" style="font-size: 0.85rem; line-height: 1.6; color: var(--text);"></div>
+      </div>
+      <div class="plan-card">
+        <h3>Rutina de Noche (PM)</h3>
+        <div id="routinePM" style="font-size: 0.85rem; line-height: 1.6; color: var(--text);"></div>
+      </div>
+    </div>
+
+    <h3 style="font-size:0.85rem; color:var(--text-sub); text-transform:uppercase; letter-spacing:0.04em; margin:22px 0 10px 0;">
+      Tratamientos no quirúrgicos a valorar, por zona
+    </h3>
+    <div id="treatmentsByZone"></div>
   </div>
 
   <div class="card" id="resultsCard" style="display:none;">
@@ -531,6 +557,12 @@
     document.getElementById('resultsCard').style.display = 'block';
     document.getElementById('moduleNav').style.display = 'flex';
 
+    // Se calcula la congestión periocular en segundo plano (sin que el usuario
+    // tenga que abrir esa pestaña) para que el módulo de Rutina siempre tenga
+    // datos disponibles desde el primer momento. El canvas se sobrescribe justo
+    // después con la malla, así que no se ve ningún parpadeo intermedio.
+    analyzeUnderEyeCongestion(lm);
+
     statusEl.innerText = "PROCESAMIENTO COMPLETO";
     setActiveModule('mesh');
   }
@@ -557,6 +589,7 @@
     document.getElementById('laxitudCard').style.display = (mod === 'laxitud') ? 'block' : 'none';
     document.getElementById('guaShaCard').style.display = (mod === 'guasha') ? 'block' : 'none';
     document.getElementById('colorCard').style.display = (mod === 'color') ? 'block' : 'none';
+    document.getElementById('rutinaCard').style.display = (mod === 'rutina') ? 'block' : 'none';
 
     if (!lastLandmarks) return;
 
@@ -566,6 +599,7 @@
     if (mod === 'laxitud') drawLaxityAndGravityVectors(lastLandmarks);
     if (mod === 'guasha') drawFullGuaShaProtocol(lastLandmarks);
     if (mod === 'color') analyzeColorimetry(lastLandmarks);
+    if (mod === 'rutina') buildRoutineAndTreatments();
   }
 
   function drawFullDense468Mesh(lm) {
@@ -977,6 +1011,73 @@
   function applyFrameColor(hex) {
     canvasContainer.style.borderColor = hex;
     canvasContainer.style.boxShadow = `0 0 30px ${hex}66`;
+  }
+
+  // --- Rutina AM/PM + tratamientos no quirúrgicos por zona ---
+  // Se construye a partir de los datos ya calculados (computedData): tipo de
+  // congestión periocular, asimetría de cejas, proporción mandibular. Todo el
+  // contenido es informativo, con la coletilla de valorarlo con un profesional.
+  function buildRoutineAndTreatments() {
+    const congestion = computedData.congestiónOjeras ? computedData.congestiónOjeras.tipo : null;
+    const isVascular = congestion && congestion.includes("Vascular");
+    const isPigment = congestion && congestion.includes("Melánica");
+
+    const amSteps = [
+      "Limpiador suave (sin sulfatos agresivos).",
+      "Sérum antioxidante — Vitamina C por la mañana ayuda a proteger frente al daño solar acumulado.",
+      "Hidratante ligero.",
+      "<b>Fotoprotector SPF 30+ — el paso no negociable</b>, todos los días, con o sin sol visible."
+    ];
+    if (isVascular) amSteps.splice(2, 0, "Sérum con cafeína en el contorno de ojos (microcirculación).");
+    if (isPigment) amSteps.splice(2, 0, "Niacinamida — ayuda a unificar tono, incluida la zona del contorno de ojos.");
+
+    const pmSteps = [
+      "Doble limpieza si has llevado protector solar/maquillaje durante el día.",
+      "Hidratante o reparador nocturno."
+    ];
+    if (isPigment) pmSteps.splice(1, 0, "Ácido tranexámico o niacinamida — activos orientados a unificar tono.");
+    if (isVascular) pmSteps.splice(1, 0, "Vitamina K tópica — apoyo a la microcirculación durante la noche.");
+    pmSteps.push("Si se introduce retinol, hacerlo de forma gradual (1-2 noches/semana al empezar) y siempre con SPF al día siguiente.");
+
+    document.getElementById('routineAM').innerHTML = amSteps.map((s, i) => `${i + 1}. ${s}`).join("<br>");
+    document.getElementById('routinePM').innerHTML = pmSteps.map((s, i) => `${i + 1}. ${s}`).join("<br>");
+
+    // Tratamientos por zona, condicionados a lo que ya sabemos de esta cara
+    const zones = [];
+
+    if (congestion) {
+      zones.push({
+        zona: "Contorno de ojos",
+        opciones: isVascular
+          ? "Mesoterapia con vitamina K, láser vascular, o relleno de ácido hialurónico muy superficial (corrige el hundimiento que genera parte de la sombra)."
+          : "Peeling químico suave, luz pulsada intensa (IPL), o láseres despigmentantes específicos para contorno de ojos."
+      });
+    }
+
+    const jawRatioVal = computedData.mandibula ? parseInt(computedData.mandibula.ratioBigonial) : null;
+    if (jawRatioVal !== null) {
+      if (jawRatioVal < 72) {
+        zones.push({ zona: "Mandíbula", opciones: "Radiofrecuencia o ultrasonido focalizado (tipo HIFU) para tensado de piel, o relleno de ácido hialurónico en el ángulo mandibular para más definición." });
+      } else if (jawRatioVal > 84) {
+        zones.push({ zona: "Mandíbula", opciones: "Si se busca un aspecto menos marcado: toxina botulínica en el músculo masetero (relaja la musculatura de masticación). Es reversible y su efecto dura varios meses." });
+      }
+    }
+
+    const browAsym = computedData.simetriaSupraciliar ? computedData.simetriaSupraciliar.desnivelCejasPx : 0;
+    if (browAsym > 5) {
+      zones.push({ zona: "Cejas", opciones: "Microblading o hilo (threading) para igualar visualmente el arco; si la asimetría viene del tono muscular, una valoración de toxina botulínica localizada." });
+    }
+
+    if (zones.length === 0) {
+      document.getElementById('treatmentsByZone').innerHTML = `<div class="rec-block">No se han detectado zonas con indicaciones específicas en este análisis — explora las demás pestañas (Piel, Cejas, Mandíbula) para más detalle.</div>`;
+    } else {
+      document.getElementById('treatmentsByZone').innerHTML = zones.map((z) => `
+        <div class="rec-block" style="margin-bottom:10px;">
+          <h3>${z.zona}</h3>
+          <p>${z.opciones}</p>
+        </div>
+      `).join('');
+    }
   }
 
   document.querySelectorAll('.module-btn').forEach(btn => {

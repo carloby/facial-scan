@@ -10,65 +10,85 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bg: #FFFFFF;
-      --surface: #F8FAFC;
-      --border: #CBD5E1;
-      --primary: #1A73E8;
-      --green: #188038;
-      --red: #D93025;
-      --text: #0F172A;
-      --text-sub: #475569;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --surface: #FFFFFF;
+      --border: #E5E7EB;
+      --primary: #7C93A0;
+      --primary-dark: #5B7280;
+      --green: #6B9080;
+      --red: #C87068;
+      --gold: #C9A66B;
+      --text: #24292F;
+      --text-sub: #8A94A0;
+      --shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
 
     * { box-sizing: border-box; }
 
     body {
-      font-family: 'Google Sans', -apple-system, sans-serif;
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-weight: 400;
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 32px 20px;
-      line-height: 1.5;
+      padding: 40px 20px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container { max-width: 1100px; margin: 0 auto; }
 
     header {
-      margin-bottom: 24px;
-      border-bottom: 2px solid var(--text);
-      padding-bottom: 16px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-end;
     }
 
-    h1 { font-size: 1.6rem; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: -0.01em; }
-    .subtitle { color: var(--text-sub); font-size: 0.85rem; font-weight: 500; margin-top: 2px; }
+    h1 { font-size: 2rem; font-weight: 300; margin: 0; letter-spacing: -0.02em; color: var(--text); }
+    h1 b, h1 strong { font-weight: 600; }
+    .subtitle { color: var(--text-sub); font-size: 0.95rem; font-weight: 400; margin-top: 6px; letter-spacing: 0.01em; }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 99px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--primary-dark);
+      border: 1px solid var(--border);
+      background: #FAFBFC;
+    }
 
     .card {
       background: var(--surface);
       border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
       border: 1px solid var(--border);
+      box-shadow: var(--shadow);
     }
 
-    h2 { font-size: 1.05rem; font-weight: 700; margin-top: 0; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.02em; }
+    h2 { font-size: 0.78rem; font-weight: 600; margin-top: 0; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-sub); }
 
     input[type="file"] {
       width: 100%;
-      padding: 16px;
-      background: #FFFFFF;
-      border: 2px dashed var(--border);
+      padding: 20px;
+      background: #FAFBFC;
+      border: 1px dashed var(--border);
       border-radius: 12px;
       font-size: 0.9rem;
       cursor: pointer;
       color: var(--text-sub);
+      font-family: 'Inter', sans-serif;
     }
 
     .canvas-container {
@@ -77,117 +97,152 @@
       max-width: 600px;
       margin: 0 auto 24px auto;
       display: none;
-      background: #000;
+      background: #F1F3F5;
       border-radius: 16px;
       overflow: hidden;
-      border: 2px solid var(--text);
+      border: 1px solid var(--border);
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
 
     canvas { width: 100%; height: auto; display: block; }
 
-    .module-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .module-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; padding: 4px; background: #FAFBFC; border-radius: 14px; border: 1px solid var(--border); }
     .module-btn {
       flex: 1;
-      min-width: 150px;
-      background: #FFFFFF;
+      min-width: 140px;
+      background: transparent;
       color: var(--text-sub);
-      border: 1px solid var(--border);
-      padding: 10px 14px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 700;
+      border: none;
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 0.74rem;
+      font-weight: 500;
       cursor: pointer;
       text-align: center;
-      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      transition: 0.15s;
+      font-family: 'Inter', sans-serif;
     }
 
+    .module-btn:hover { color: var(--text); }
+
     .module-btn.active {
-      background: var(--primary);
-      color: #FFFFFF;
-      border-color: var(--primary);
-      box-shadow: var(--shadow);
+      background: #FFFFFF;
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      font-weight: 600;
     }
 
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 14px;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
     }
 
     .metric-card {
       background: #FFFFFF;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+      padding: 22px;
     }
 
-    .metric-title { font-size: 0.75rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; }
-    .metric-value { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin: 4px 0; font-family: 'Roboto Mono', monospace; }
-    .metric-desc { font-size: 0.82rem; color: var(--text); line-height: 1.35; }
+    .metric-title { font-size: 0.68rem; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.07em; }
+    .metric-value { font-size: 1.9rem; font-weight: 300; color: var(--text); margin: 6px 0; font-family: 'Inter', sans-serif; letter-spacing: -0.02em; }
+    .metric-desc { font-size: 0.82rem; color: var(--text-sub); line-height: 1.4; }
 
     .rec-block {
-      background: #FFFFFF;
-      border-left: 5px solid var(--primary);
-      padding: 18px;
-      border-radius: 8px;
-      margin-top: 12px;
+      background: #FAFBFC;
+      border-left: 2px solid var(--primary);
+      padding: 22px 24px;
+      border-radius: 4px 12px 12px 4px;
+      margin-top: 14px;
       font-size: 0.88rem;
-      line-height: 1.55;
-      border-top: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
+      line-height: 1.65;
+      color: var(--text);
     }
+    .rec-block h3 { color: var(--text); font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0; }
 
     .plan-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px;
-      margin-top: 16px;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-top: 18px;
     }
 
     .plan-card {
       background: #FFFFFF;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
+      padding: 24px;
     }
 
     .plan-card h3 {
       margin-top: 0;
-      font-size: 0.9rem;
-      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-sub);
       text-transform: uppercase;
+      letter-spacing: 0.06em;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
+      padding-bottom: 10px;
     }
 
-    .swatch-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 14px 0; }
-    .swatch-item { background: #FFFFFF; border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; font-size: 0.78rem; }
-    .swatch-box { width: 100%; height: 40px; border-radius: 4px; margin-bottom: 6px; border: 1px solid rgba(0,0,0,0.1); }
+    .swatch-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin: 16px 0; }
+    .swatch-item { background: #FAFBFC; border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; font-size: 0.74rem; color: var(--text-sub); }
+    .swatch-box { width: 100%; height: 42px; border-radius: 6px; margin-bottom: 8px; border: 1px solid rgba(0,0,0,0.06); }
+
+    .swatch-box-click { cursor: pointer; transition: transform 0.15s; }
+    .swatch-box-click:hover { transform: scale(1.06); }
+
+    .settings-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .settings-row label { font-size: 0.7rem; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.06em; display: flex; justify-content: space-between; }
+    .settings-row input[type="range"] { width: 100%; accent-color: var(--primary); }
+    .settings-hint { font-size: 0.78rem; color: var(--text-sub); margin-top: -2px; }
+
+    .season-pill {
+      display: inline-block;
+      padding: 8px 18px;
+      border-radius: 99px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.01em;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: #FAFBFC;
+    }
 
     pre {
-      background: #0F172A;
-      color: #38BDF8;
-      padding: 16px;
+      background: #FAFBFC;
+      color: var(--text-sub);
+      padding: 20px;
       border-radius: 12px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       overflow-x: auto;
       white-space: pre-wrap;
       font-family: 'Roboto Mono', monospace;
+      border: 1px solid var(--border);
     }
 
     button.action-btn {
-      background: var(--primary);
+      background: var(--text);
       color: #FFFFFF;
       border: none;
-      padding: 12px 20px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      border-radius: 20px;
+      padding: 14px 20px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      border-radius: 10px;
       cursor: pointer;
       width: 100%;
-      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      transition: 0.15s;
+      font-family: 'Inter', sans-serif;
     }
+    button.action-btn:hover { background: var(--primary-dark); }
   </style>
 </head>
 <body>
@@ -195,10 +250,11 @@
 <div class="container">
   <header>
     <div>
-      <h1>Biometric Visagism Studio</h1>
-      <div class="subtitle">Motor Dinámico de Diagnóstico Antropométrico y Visagismo Clínico</div>
+      <div class="badge-pill" style="margin-bottom:14px;">Análisis Personalizado</div>
+      <h1>Biometric Visagism <b>Studio</b></h1>
+      <div class="subtitle">Diagnóstico antropométrico y visagismo, calculado sobre tu propia foto.</div>
     </div>
-    <div id="status" style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">ESPERANDO MUESTRA</div>
+    <div id="status" style="font-size: 0.78rem; font-weight: 600; color: var(--text-sub); letter-spacing: 0.04em; text-transform: uppercase;">Esperando muestra</div>
   </header>
 
   <div class="card">
@@ -212,16 +268,22 @@
   </div>
 
   <div class="module-nav" id="moduleNav" style="display:none;">
-    <button class="module-btn active" data-module="mesh">Malla Biométrica (468 P)</button>
+    <button class="module-btn active" data-module="mesh">Malla Biométrica (478 P)</button>
     <button class="module-btn" data-module="plan">Plan de Optimización Facial</button>
     <button class="module-btn" data-module="ojeras">Dermatoscopia Periocular</button>
     <button class="module-btn" data-module="cejas">Morfometría Supraciliar</button>
     <button class="module-btn" data-module="laxitud">Vectores de Tensado &amp; Laxitud</button>
     <button class="module-btn" data-module="guasha">Protocolo Drenaje Linfático</button>
+    <button class="module-btn" data-module="color">Colorimetría &amp; Paleta</button>
   </div>
 
   <div class="card" id="dashboardCard" style="display:none;">
     <h2>Dashboard Antropométrico Estructural</h2>
+    <p style="font-size: 0.85rem; color: var(--text-sub); margin-top: -6px;">
+      Estas medidas salen de la malla de 478 puntos de MediaPipe: cada punto tiene una posición
+      anatómica fija (el mismo número = el mismo lugar de la cara siempre), así que las distancias
+      entre ellos son comparables entre fotos y personas.
+    </p>
     <div class="dashboard-grid">
       <div class="metric-card">
         <div class="metric-title">Morfología y Relación Dimensional</div>
@@ -269,6 +331,16 @@
 
   <div id="ojerasCard" class="card" style="display:none;">
     <h2>Dermatoscopia Periocular &amp; Congestión Vascular</h2>
+
+    <div class="settings-row">
+      <label>Umbral de sensibilidad (delta de sombra) <span id="thresholdValueLabel">10</span></label>
+      <input type="range" id="thresholdSlider" min="2" max="30" value="10" />
+      <div class="settings-hint">
+        Más bajo = detecta como "congestión" hasta diferencias sutiles de sombra. Más alto = solo
+        marca diferencias claras. Ajústalo si el diagnóstico te parece demasiado (o poco) sensible.
+      </div>
+    </div>
+
     <div class="swatch-group" id="ojerasSwatches"></div>
     <div id="ojerasRec" class="rec-block"></div>
   </div>
@@ -288,6 +360,22 @@
     <div id="guaShaRec" class="rec-block"></div>
   </div>
 
+  <div id="colorCard" class="card" style="display:none;">
+    <h2>Colorimetría Facial &amp; Paleta Personal</h2>
+    <p style="font-size: 0.85rem; color: var(--text-sub); margin-top: -6px;">
+      Aproximación fotográfica basada en el contraste piel/ojos/pelo de esta foto — no sustituye una
+      colorimetría profesional con telas físicas bajo luz controlada. El balance de blancos de la foto
+      puede sesgar el resultado.
+    </p>
+    <div id="seasonPill" class="season-pill">Analizando...</div>
+    <div class="swatch-group" id="colorSwatches"></div>
+    <div id="colorRec" class="rec-block"></div>
+    <h3 style="font-size:0.85rem; color:var(--text-sub); text-transform:uppercase; letter-spacing:0.04em; margin:18px 0 10px 0;">
+      Paleta recomendada — toca un color para probarlo como marco
+    </h3>
+    <div class="swatch-group" id="paletteSwatches"></div>
+  </div>
+
   <div class="card" id="resultsCard" style="display:none;">
     <h2>Registro Técnico Exportable (JSON)</h2>
     <pre id="jsonOutput"></pre>
@@ -297,6 +385,8 @@
 
 <script>
   let faceMesh, lastLandmarks = null, computedData = {};
+  let underEyeThreshold = 10; // ajustable desde el slider de la interfaz
+
   const imageInput = document.getElementById('imageInput');
   const statusEl = document.getElementById('status');
   const canvasContainer = document.getElementById('canvasContainer');
@@ -331,6 +421,15 @@
       await faceMesh.send({ image: photoImg });
     };
     photoImg.src = url;
+  });
+
+  // Slider de umbral: al moverlo, re-analiza en caliente si ya hay una foto cargada
+  const thresholdSlider = document.getElementById('thresholdSlider');
+  const thresholdValueLabel = document.getElementById('thresholdValueLabel');
+  thresholdSlider.addEventListener('input', (e) => {
+    underEyeThreshold = Number(e.target.value);
+    thresholdValueLabel.innerText = underEyeThreshold;
+    if (lastLandmarks) analyzeUnderEyeCongestion(lastLandmarks);
   });
 
   function onResults(results) {
@@ -434,6 +533,7 @@
     document.getElementById('cejasCard').style.display = (mod === 'cejas') ? 'block' : 'none';
     document.getElementById('laxitudCard').style.display = (mod === 'laxitud') ? 'block' : 'none';
     document.getElementById('guaShaCard').style.display = (mod === 'guasha') ? 'block' : 'none';
+    document.getElementById('colorCard').style.display = (mod === 'color') ? 'block' : 'none';
 
     if (!lastLandmarks) return;
 
@@ -442,6 +542,7 @@
     if (mod === 'cejas') drawEyebrowModule(lastLandmarks);
     if (mod === 'laxitud') drawLaxityAndGravityVectors(lastLandmarks);
     if (mod === 'guasha') drawFullGuaShaProtocol(lastLandmarks);
+    if (mod === 'color') analyzeColorimetry(lastLandmarks);
   }
 
   function drawFullDense468Mesh(lm) {
@@ -450,13 +551,13 @@
     for (let i = 0; i < lm.length; i++) {
       const p = px(lm[i]);
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 3.5, 0, 2 * Math.PI);
-      ctx.fillStyle = "#00FFFF";
+      ctx.arc(p.x, p.y, 2.2, 0, 2 * Math.PI);
+      ctx.fillStyle = "#7C93A0";
       ctx.fill();
     }
 
-    ctx.strokeStyle = "#1A73E8";
-    ctx.lineWidth = 4.0;
+    ctx.strokeStyle = "#5B7280";
+    ctx.lineWidth = 1.5;
 
     const drawPath = (indices) => {
       ctx.beginPath();
@@ -475,6 +576,9 @@
     drawPath([61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146]);
   }
 
+  // --- Dermatoscopia periocular: ahora orientada a HÁBITOS y TRATAMIENTOS,
+  // no a maquillaje/corrección cosmética. El umbral de sensibilidad es ajustable
+  // desde la interfaz (underEyeThreshold), en vez de un valor fijo en el código.
   function analyzeUnderEyeCongestion(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -494,35 +598,58 @@
     const rightUnderEye = getRGB(lm[353]);
     const foreheadSkin = getRGB(lm[10]);
 
-    const drawEyeMarker = (point, label) => {
+    const drawEyeMarker = (point) => {
       const p = px(point);
-      ctx.strokeStyle = "#D93025";
-      ctx.lineWidth = 5;
+      ctx.strokeStyle = "#C87068";
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 20, 0, 2 * Math.PI);
+      ctx.arc(p.x, p.y, 16, 0, 2 * Math.PI);
       ctx.stroke();
     };
 
-    drawEyeMarker(lm[124], "L");
-    drawEyeMarker(lm[353], "R");
+    drawEyeMarker(lm[124]);
+    drawEyeMarker(lm[353]);
 
     const avgEyeLum = ((leftUnderEye.r + leftUnderEye.g + leftUnderEye.b) + (rightUnderEye.r + rightUnderEye.g + rightUnderEye.b)) / 6;
     const foreheadLum = (foreheadSkin.r + foreheadSkin.g + foreheadSkin.b) / 3;
     const darknessDiff = Math.round(foreheadLum - avgEyeLum);
 
     let congestionType = "Baja / Normal";
-    let skinAdvice = "No se observan diferencias críticas de congestión en la zona infraorbitaria.";
-    let routineAdvice = "Mantener hidratación estándar con sérum neutro.";
+    let skinAdvice = "No se observan diferencias críticas de congestión en la zona infraorbitaria. Rutina de mantenimiento estándar.";
+    let routineAdvice = "Mantener hidratación estándar con sérum neutro y buen descanso.";
 
-    if (darknessDiff > 10) {
+    if (darknessDiff > underEyeThreshold) {
       if ((leftUnderEye.b > leftUnderEye.r) || (rightUnderEye.b > rightUnderEye.r)) {
         congestionType = "Congestión Vascular / Estancamiento Microcirculatorio";
-        skinAdvice = "• <b>Tono Violeta/Azul detectable:</b> Refleja mala microcirculación sanguínea o piel infraorbitaria delgada.<br>• <b>Corrección Cosmética:</b> Correctores con subtono amarillo o melocotón para neutralizar la sombra azulada.";
-        routineAdvice = "• Aplicar compresas frías o crio-rodillos al despertar.<br>• Realizar drenaje desde el canto interno del ojo hacia la sien.<br>• Usar sérums perioculares con Cafeína o Vitamina K.";
+        skinAdvice =
+          "• <b>Tono Violeta/Azul detectable:</b> suele reflejar microcirculación lenta o piel infraorbitaria fina, " +
+          "más visible por la sangre desoxigenada bajo la superficie.<br>" +
+          "• <b>Hábitos diarios:</b> dormir con la cabeza ligeramente elevada, reducir el consumo de sal por la noche, " +
+          "controlar alergias/rinitis (frotarse los ojos empeora la congestión), y aplicar frío (crio-rodillo, " +
+          "cucharas frías) al despertar.<br>" +
+          "• <b>Activos tópicos:</b> cafeína, vitamina K y péptidos que refuercen la microcirculación.<br>" +
+          "• <b>Tratamientos profesionales a valorar con un dermatólogo/esteticista:</b> radiofrecuencia facial " +
+          "(estimula colágeno y microcirculación), mesoterapia con vitamina K, o láser vascular en casos persistentes.";
+        routineAdvice =
+          "• Drenaje manual diario desde el canto interno del ojo hacia la sien (ver módulo de Drenaje Linfático).<br>" +
+          "• Compresas frías 5-10 min al despertar.<br>" +
+          "• Revisar calidad de sueño y postura al dormir.";
       } else {
         congestionType = "Hiperpigmentación Melánica / Sombra del Surco";
-        skinAdvice = "• <b>Tono Pardo/Marrón detectable:</b> Acumulación localizada de melanina o sombra por hundimiento del canal lagrimal.<br>• <b>Corrección Cosmética:</b> Corrector con subtono salmón ligero e iluminador puntual.";
-        routineAdvice = "• Aplicar diariamente fotoprotector solar en la cuenca infraorbitaria.<br>• Usar activos despigmentantes suaves como Ácido Tranexámico o Niacinamide.<br>• Evitar el frotado ocular agresivo.";
+        skinAdvice =
+          "• <b>Tono Pardo/Marrón detectable:</b> suele deberse a acumulación localizada de melanina, o a una " +
+          "sombra óptica por el hundimiento del surco lagrimal (no siempre es pigmento real).<br>" +
+          "• <b>Hábitos diarios:</b> fotoprotector solar específico para contorno de ojos todos los días (la " +
+          "exposición solar acumulada es la causa más común de que empeore con el tiempo), y evitar frotarse los ojos.<br>" +
+          "• <b>Activos tópicos:</b> ácido tranexámico, niacinamida, o vitamina C en dosis suaves formuladas para " +
+          "contorno de ojos.<br>" +
+          "• <b>Tratamientos profesionales a valorar con un dermatólogo:</b> peelings químicos suaves, luz " +
+          "pulsada intensa (IPL), o láseres despigmentantes específicos para esta zona — siempre bajo valoración " +
+          "profesional, la piel del contorno de ojos es más sensible que el resto de la cara.";
+        routineAdvice =
+          "• Aplicar SPF en contorno de ojos cada mañana, sin excepción.<br>" +
+          "• Evitar frotado ocular agresivo.<br>" +
+          "• Reevaluar en 8-12 semanas: los activos despigmentantes tardan en mostrar cambios visibles.";
       }
     }
 
@@ -547,14 +674,18 @@
     document.getElementById('ojerasRec').innerHTML = `
       <h3>Diagnóstico Dermatoscópico Periocular</h3>
       <p><b>Condición:</b> <span style="color:var(--red); font-weight:700;">${congestionType}</span></p>
-      <p><b>Delta de Sombra:</b> ${darknessDiff} puntos de oscuridad sobre la piel base.</p>
+      <p><b>Delta de Sombra:</b> ${darknessDiff} puntos de oscuridad sobre la piel base (umbral actual: ${underEyeThreshold}).</p>
       <p style="margin-top:8px;">${skinAdvice}</p>
+      <p style="margin-top:10px; font-size:0.78rem; color:var(--text-sub);">
+        Esto es una lectura de color de píxeles, no un diagnóstico médico. Si la condición te preocupa
+        o persiste, consúltalo con un dermatólogo.
+      </p>
     `;
 
     document.getElementById('planSkin').innerHTML = skinAdvice;
     document.getElementById('planRoutine').innerHTML = routineAdvice;
 
-    computedData.congestiónOjeras = { tipo: congestionType, delta: darknessDiff };
+    computedData.congestiónOjeras = { tipo: congestionType, delta: darknessDiff, umbralUsado: underEyeThreshold };
     document.getElementById('jsonOutput').innerText = JSON.stringify(computedData, null, 2);
   }
 
@@ -563,8 +694,8 @@
 
     const browL = px(lm[55]), browR = px(lm[285]);
 
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "#D93025";
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#C87068";
     ctx.beginPath(); ctx.moveTo(browL.x - 40, browL.y); ctx.lineTo(browR.x + 40, browR.y); ctx.stroke();
 
     const browDiff = computedData.simetriaSupraciliar ? computedData.simetriaSupraciliar.desnivelCejasPx : 0;
@@ -586,8 +717,8 @@
 
     const drawVectorDown = (pFrom, length) => {
       const f = px(pFrom);
-      ctx.strokeStyle = "#D93025";
-      ctx.lineWidth = 4;
+      ctx.strokeStyle = "#C87068";
+      ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(f.x, f.y);
       ctx.lineTo(f.x, f.y + length);
@@ -607,8 +738,8 @@
 
   function drawFullGuaShaProtocol(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#188038";
-    ctx.lineWidth = 5;
+    ctx.strokeStyle = "#6B9080";
+    ctx.lineWidth = 2;
 
     const drawUpArrow = (pFrom, pTo) => {
       const f = px(pFrom), t = px(pTo);
@@ -631,6 +762,128 @@
         <li><b>Región Frontal:</b> Tracción ascendente desde las cejas hacia el nacimiento del cabello.</li>
       </ol>
     `;
+  }
+
+  // --- Colorimetría facial: estación cromática + paleta interactiva ---
+
+  const SEASON_PALETTES = {
+    "Invierno Profundo": ["#000000", "#FFFFFF", "#E60026", "#0047AB", "#0B6E4F", "#C71585", "#7B68EE", "#36454F"],
+    "Verano Frío": ["#B0C4DE", "#D8BFD8", "#E8A0BF", "#A9A9A9", "#9370DB", "#8FBC94", "#6C7B95", "#F0EAD6"],
+    "Otoño Cálido": ["#B7410E", "#808000", "#C19A6B", "#8B4513", "#DAA520", "#6B8E23", "#CC7722", "#4A3728"],
+    "Primavera Cálida": ["#FF7F50", "#FFDAB9", "#FFD700", "#40E0D0", "#9ACD32", "#FFB6C1", "#FFFFF0", "#48D1CC"]
+  };
+
+  const SEASON_DESC = {
+    "Invierno Profundo": "Contraste alto y subtono frío detectado. Suelen favorecer colores puros, saturados y de alto contraste (blanco/negro, joya intensa) frente a tonos tierra apagados.",
+    "Verano Frío": "Subtono frío con contraste suave detectado. Suelen favorecer colores empolvados y difuminados (azules grisáceos, malvas, rosas suaves) frente a colores muy saturados o muy cálidos.",
+    "Otoño Cálido": "Subtono cálido con tonos profundos/apagados detectado. Suelen favorecer colores tierra, especiados y dorados frente a tonos fríos o muy brillantes.",
+    "Primavera Cálida": "Subtono cálido con luminosidad clara detectado. Suelen favorecer colores cálidos, claros y vívidos frente a tonos apagados o muy oscuros."
+  };
+
+  function getPixelRGB(sCtx, point, w, h) {
+    const cx = Math.min(w - 1, Math.max(0, Math.round(point.x)));
+    const cy = Math.min(h - 1, Math.max(0, Math.round(point.y)));
+    const data = sCtx.getImageData(cx, cy, 1, 1).data;
+    return { r: data[0], g: data[1], b: data[2] };
+  }
+  function rgbToHex(c) {
+    return `#${((1 << 24) + (c.r << 16) + (c.g << 8) + c.b).toString(16).slice(1)}`;
+  }
+  function luminance(c) {
+    return (0.299 * c.r + 0.587 * c.g + 0.114 * c.b);
+  }
+
+  function analyzeColorimetry(lm) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const sampleCanvas = document.createElement('canvas');
+    sampleCanvas.width = photoImg.naturalWidth;
+    sampleCanvas.height = photoImg.naturalHeight;
+    const sCtx = sampleCanvas.getContext('2d');
+    sCtx.drawImage(photoImg, 0, 0);
+    const W = sampleCanvas.width, H = sampleCanvas.height;
+
+    // Piel: interpolado entre nacimiento del pelo (10) y entrecejo (9) para caer
+    // siempre sobre piel, no sobre pelo ni ceja.
+    const p10 = px(lm[10]), p9 = px(lm[9]);
+    const skinPt = { x: p10.x + (p9.x - p10.x) * 0.35, y: p10.y + (p9.y - p10.y) * 0.35 };
+    const skin = getPixelRGB(sCtx, skinPt, W, H);
+
+    // Ojos: centro del iris (disponible por refineLandmarks: true)
+    const eyeL = getPixelRGB(sCtx, px(lm[468]), W, H);
+    const eyeR = getPixelRGB(sCtx, px(lm[473]), W, H);
+    const eyes = { r: (eyeL.r + eyeR.r) / 2, g: (eyeL.g + eyeR.g) / 2, b: (eyeL.b + eyeR.b) / 2 };
+
+    // Pelo: aproximado, un poco por encima del nacimiento del pelo detectado.
+    // Falla si hay flequillo tapando esa zona o pelo recogido — es una estimación.
+    const faceHeight = dist(lm[10], lm[152]);
+    const hairPt = { x: p10.x, y: Math.max(2, p10.y - faceHeight * 0.14) };
+    const hair = getPixelRGB(sCtx, hairPt, W, H);
+
+    // Marcadores visuales de los 3 puntos muestreados
+    [skinPt, px(lm[468]), px(lm[473]), hairPt].forEach((p) => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
+      ctx.strokeStyle = "#7C93A0";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // Clasificación de estación (aproximación del sistema clásico de 4 estaciones)
+    const warmth = skin.r - skin.b; // >0 = subtono cálido
+    const overallLightness = (luminance(skin) + luminance(hair) + luminance(eyes)) / 3;
+    const contrast = Math.abs(luminance(hair) - luminance(skin));
+
+    let season;
+    if (warmth <= 6) {
+      season = contrast > 55 ? "Invierno Profundo" : "Verano Frío";
+    } else {
+      season = overallLightness < 130 ? "Otoño Cálido" : "Primavera Cálida";
+    }
+
+    document.getElementById('seasonPill').innerText = season;
+
+    document.getElementById('colorSwatches').innerHTML = `
+      <div class="swatch-item">
+        <div class="swatch-box" style="background:${rgbToHex(skin)};"></div>
+        <b>Piel</b><div style="font-family:'Roboto Mono',monospace;">${rgbToHex(skin)}</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch-box" style="background:${rgbToHex(eyes)};"></div>
+        <b>Ojos</b><div style="font-family:'Roboto Mono',monospace;">${rgbToHex(eyes)}</div>
+      </div>
+      <div class="swatch-item">
+        <div class="swatch-box" style="background:${rgbToHex(hair)};"></div>
+        <b>Pelo (aprox.)</b><div style="font-family:'Roboto Mono',monospace;">${rgbToHex(hair)}</div>
+      </div>
+    `;
+
+    document.getElementById('colorRec').innerHTML = `
+      <h3>Estación Cromática Estimada: ${season}</h3>
+      <p>${SEASON_DESC[season]}</p>
+      <p style="margin-top:10px; font-size:0.78rem; color:var(--text-sub);">
+        Contraste piel/pelo: ${contrast.toFixed(0)} · Subtono (R-B piel): ${warmth.toFixed(0)} ·
+        Luminosidad global: ${overallLightness.toFixed(0)}
+      </p>
+    `;
+
+    const palette = SEASON_PALETTES[season];
+    document.getElementById('paletteSwatches').innerHTML = palette.map((hex) => `
+      <div class="swatch-item">
+        <div class="swatch-box swatch-box-click" style="background:${hex};" onclick="applyFrameColor('${hex}')"></div>
+        <div style="font-family:'Roboto Mono',monospace;">${hex}</div>
+      </div>
+    `).join('');
+
+    computedData.colorimetria = { estacion: season, pielHex: rgbToHex(skin), ojosHex: rgbToHex(eyes), peloHexAprox: rgbToHex(hair) };
+    document.getElementById('jsonOutput').innerText = JSON.stringify(computedData, null, 2);
+  }
+
+  // Prueba virtual: aplica el color de la paleta como marco/resplandor alrededor
+  // de la foto, para ver cómo "sienta" ese color cerca de la cara.
+  function applyFrameColor(hex) {
+    canvasContainer.style.borderColor = hex;
+    canvasContainer.style.boxShadow = `0 0 30px ${hex}66`;
   }
 
   document.querySelectorAll('.module-btn').forEach(btn => {

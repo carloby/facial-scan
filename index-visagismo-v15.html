@@ -369,6 +369,18 @@
     </p>
     <div id="seasonPill" class="season-pill">Analizando...</div>
     <div class="swatch-group" id="colorSwatches"></div>
+
+    <div class="settings-row" style="margin-top:6px;">
+      <label>Color de pelo</label>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button id="pickHairBtn" class="action-btn" style="width:auto; flex:1;">Marcar mi pelo en la foto</button>
+        <button id="autoHairBtn" class="action-btn" style="width:auto; flex:1; background:#FAFBFC; color:var(--text-sub); border:1px solid var(--border);">Usar estimación automática</button>
+      </div>
+      <div class="settings-hint" id="hairModeHint">
+        Usando estimación automática (aproximada). Pulsa "Marcar mi pelo" y luego haz clic sobre tu pelo en la foto para un color exacto.
+      </div>
+    </div>
+
     <div id="colorRec" class="rec-block"></div>
     <h3 style="font-size:0.85rem; color:var(--text-sub); text-transform:uppercase; letter-spacing:0.04em; margin:18px 0 10px 0;">
       Paleta recomendada — toca un color para probarlo como marco
@@ -462,20 +474,20 @@
 
     let shape = "Ovalada / Equilibrada";
     let shapeDesc = "Proporciones con simetría clásica. Admite diversidad de estilos y cortes.";
-    let hairTip = "• Usar cortes con volumen equilibrado para conservar la armonía natural.<br>• Evitar flequillos muy tupidos que alteren la proporción de los tercios.";
+    let hairTip = "• Casi cualquier corte te queda bien con esta proporción.<br>• Evita flequillos muy densos y pesados: tapan buena parte de la frente y rompen el equilibrio natural de tu cara.";
 
     if (ratioHW > 1.45) {
       shape = "Predominio Vertical (Alargada)";
       shapeDesc = "Dominancia de la longitud sobre el ancho facial.";
-      hairTip = "• Aportar volumen lateral mediante peinados con textura o capas a los lados.<br>• Reducir la altura excesiva en la zona superior.<br>• Enmarcar el rostro con desfilados que aporten amplitud horizontal.";
+      hairTip = "• Pide capas a los lados que den volumen hacia los lados (no hacia arriba) — así el pelo compensa visualmente el largo de la cara.<br>• Evita llevarlo muy liso y pegado a la cabeza, porque alarga aún más.<br>• Un flequillo (recto o de lado) también ayuda a acortar la cara visualmente.";
     } else if (jawRatioVal > 84) {
       shape = "Angular / Estructurada";
       shapeDesc = "Base mandibular definida con ángulos marcados.";
-      hairTip = "• Cortes con textura suave o movimiento arriba para suavizar los ángulos.<br>• Desfilados suaves hacia el rostro para estilizar la línea mandibular.";
+      hairTip = "• Pide capas suaves con algo de volumen en la parte de arriba de la cabeza (para que no se vea todo plano).<br>• Pide al peluquero que \"desfile\" las puntas que caen cerca de la mandíbula — es una técnica con tijeras especiales que quita densidad al pelo en esa zona, para que no parezca un bloque recto y se suavice la línea de la mandíbula.";
     } else if (ratioHW < 1.28) {
       shape = "Predominio Horizontal (Redonda)";
       shapeDesc = "Proporción achatada con similar ancho y alto.";
-      hairTip = "• Generar volumen vertical superior (textura alta o peinados hacia arriba) para estilizar.<br>• Despejar los laterales para no añadir amplitud.<br>• Favorecen las rayas ladeadas y desfilados asimétricos.";
+      hairTip = "• Pide volumen en la coronilla (la parte de arriba de la cabeza) para alargar visualmente la cara.<br>• Mantén los lados más pegados, sin volumen extra ahí.<br>• La raya al lado (no al medio) y las capas asimétricas también ayudan.";
     }
 
     let jawInterpretation = "";
@@ -516,8 +528,6 @@
 
     document.getElementById('jsonOutput').innerText = JSON.stringify(computedData, null, 2);
 
-    document.getElementById('dashboardCard').style.display = 'block';
-    document.getElementById('planCard').style.display = 'block';
     document.getElementById('resultsCard').style.display = 'block';
     document.getElementById('moduleNav').style.display = 'flex';
 
@@ -528,6 +538,19 @@
   function setActiveModule(mod) {
     document.querySelectorAll('.module-btn').forEach(b => b.classList.toggle('active', b.dataset.module === mod));
 
+    // Si se cambia de pestaña con el modo "marcar pelo" activo, se desactiva
+    // para no dejar el canvas escuchando clics en un módulo que no toca.
+    if (mod !== 'color' && pickHairModeActive) {
+      pickHairModeActive = false;
+      canvas.style.pointerEvents = 'none';
+      canvas.style.cursor = 'default';
+      hairModeHint.innerText = "Usando estimación automática (aproximada). Pulsa \"Marcar mi pelo\" y luego haz clic sobre tu pelo en la foto para un color exacto.";
+    }
+
+    // El dashboard de biometría ahora es "una pestaña más" (la de "mesh"), no un
+    // bloque fijo que se queda siempre arriba — así no hay que bajar para ver
+    // el resultado del módulo que realmente has seleccionado.
+    document.getElementById('dashboardCard').style.display = (mod === 'mesh') ? 'block' : 'none';
     document.getElementById('planCard').style.display = (mod === 'plan') ? 'block' : 'none';
     document.getElementById('ojerasCard').style.display = (mod === 'ojeras') ? 'block' : 'none';
     document.getElementById('cejasCard').style.display = (mod === 'cejas') ? 'block' : 'none';
@@ -550,14 +573,20 @@
 
     for (let i = 0; i < lm.length; i++) {
       const p = px(lm[i]);
+      // Halo blanco fino debajo para que el punto resalte sobre cualquier tono
+      // de piel o pelo, sin necesidad de un color chillón.
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 2.2, 0, 2 * Math.PI);
-      ctx.fillStyle = "#7C93A0";
+      ctx.arc(p.x, p.y, 5.5, 0, 2 * Math.PI);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+      ctx.fillStyle = "#5B7280";
       ctx.fill();
     }
 
-    ctx.strokeStyle = "#5B7280";
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = "#3D4A56";
+    ctx.lineWidth = 2;
 
     const drawPath = (indices) => {
       ctx.beginPath();
@@ -600,8 +629,13 @@
 
     const drawEyeMarker = (point) => {
       const p = px(point);
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 16, 0, 2 * Math.PI);
+      ctx.stroke();
       ctx.strokeStyle = "#C87068";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.arc(p.x, p.y, 16, 0, 2 * Math.PI);
       ctx.stroke();
@@ -793,6 +827,55 @@
     return (0.299 * c.r + 0.587 * c.g + 0.114 * c.b);
   }
 
+  // Color de pelo: por defecto se estima automáticamente (poco fiable si hay
+  // flequillo, pelo recogido, etc.), pero el usuario puede marcarlo a mano
+  // haciendo clic directamente sobre su pelo en la foto — mucho más preciso.
+  let manualHairColor = null;
+  let pickHairModeActive = false;
+
+  const pickHairBtn = document.getElementById('pickHairBtn');
+  const autoHairBtn = document.getElementById('autoHairBtn');
+  const hairModeHint = document.getElementById('hairModeHint');
+
+  pickHairBtn.addEventListener('click', () => {
+    pickHairModeActive = true;
+    canvas.style.pointerEvents = 'auto';
+    canvas.style.cursor = 'crosshair';
+    hairModeHint.innerText = "Modo activo: haz clic directamente sobre tu pelo en la foto de arriba.";
+  });
+
+  autoHairBtn.addEventListener('click', () => {
+    manualHairColor = null;
+    pickHairModeActive = false;
+    canvas.style.pointerEvents = 'none';
+    canvas.style.cursor = 'default';
+    hairModeHint.innerText = "Usando estimación automática (aproximada). Pulsa \"Marcar mi pelo\" para un color exacto.";
+    if (lastLandmarks) analyzeColorimetry(lastLandmarks);
+  });
+
+  canvas.addEventListener('click', (e) => {
+    if (!pickHairModeActive || !lastLandmarks) return;
+    const rect = canvas.getBoundingClientRect();
+    const xRatio = (e.clientX - rect.left) / rect.width;
+    const yRatio = (e.clientY - rect.top) / rect.height;
+    const x = xRatio * photoImg.naturalWidth;
+    const y = yRatio * photoImg.naturalHeight;
+
+    const sampleCanvas = document.createElement('canvas');
+    sampleCanvas.width = photoImg.naturalWidth;
+    sampleCanvas.height = photoImg.naturalHeight;
+    const sCtx = sampleCanvas.getContext('2d');
+    sCtx.drawImage(photoImg, 0, 0);
+    manualHairColor = getPixelRGB(sCtx, { x, y }, sampleCanvas.width, sampleCanvas.height);
+
+    pickHairModeActive = false;
+    canvas.style.pointerEvents = 'none';
+    canvas.style.cursor = 'default';
+    hairModeHint.innerText = `Color de pelo marcado manualmente: ${rgbToHex(manualHairColor)}. Pulsa "Usar estimación automática" para volver al modo aproximado.`;
+
+    analyzeColorimetry(lastLandmarks);
+  });
+
   function analyzeColorimetry(lm) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -814,17 +897,27 @@
     const eyeR = getPixelRGB(sCtx, px(lm[473]), W, H);
     const eyes = { r: (eyeL.r + eyeR.r) / 2, g: (eyeL.g + eyeR.g) / 2, b: (eyeL.b + eyeR.b) / 2 };
 
-    // Pelo: aproximado, un poco por encima del nacimiento del pelo detectado.
-    // Falla si hay flequillo tapando esa zona o pelo recogido — es una estimación.
+    // Pelo: si el usuario lo ha marcado a mano, se usa ese color exacto (mucho
+    // más fiable). Si no, se recurre a la estimación automática (aproximada,
+    // falla con flequillo, pelo recogido, calvicie, etc.)
     const faceHeight = dist(lm[10], lm[152]);
     const hairPt = { x: p10.x, y: Math.max(2, p10.y - faceHeight * 0.14) };
-    const hair = getPixelRGB(sCtx, hairPt, W, H);
+    const hair = manualHairColor || getPixelRGB(sCtx, hairPt, W, H);
+    const hairMarkerPt = manualHairColor ? null : hairPt; // si es manual, no hay un punto fijo que marcar aquí
 
-    // Marcadores visuales de los 3 puntos muestreados
-    [skinPt, px(lm[468]), px(lm[473]), hairPt].forEach((p) => {
+    // Marcadores visuales de los puntos muestreados, con halo blanco para
+    // que se vean claramente sobre cualquier tono de piel/pelo de fondo.
+    const markerPoints = [skinPt, px(lm[468]), px(lm[473])];
+    if (hairMarkerPt) markerPoints.push(hairMarkerPt);
+    markerPoints.forEach((p) => {
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
-      ctx.strokeStyle = "#7C93A0";
+      ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
+      ctx.strokeStyle = "#3D4A56";
       ctx.lineWidth = 2;
       ctx.stroke();
     });
@@ -854,7 +947,7 @@
       </div>
       <div class="swatch-item">
         <div class="swatch-box" style="background:${rgbToHex(hair)};"></div>
-        <b>Pelo (aprox.)</b><div style="font-family:'Roboto Mono',monospace;">${rgbToHex(hair)}</div>
+        <b>Pelo ${manualHairColor ? "(marcado por ti)" : "(aprox.)"}</b><div style="font-family:'Roboto Mono',monospace;">${rgbToHex(hair)}</div>
       </div>
     `;
 
@@ -896,4 +989,5 @@
   });
 </script>
 </body>
+</html>
 </html>
